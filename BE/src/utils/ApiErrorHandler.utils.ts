@@ -1,9 +1,10 @@
-class ApiErrorHandler extends Error {
+class ApiErrorHandler {
   public code: number;
+  public message: string;
   constructor(code: number, message: string) {
-    super(message);
+    // super(message);
+    this.message = message;
     this.code = code;
-    this.name = "ApiErrorHandler";
 
     Object.setPrototypeOf(this, ApiErrorHandler.prototype);
   }

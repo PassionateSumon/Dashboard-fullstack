@@ -12,12 +12,13 @@ export const authMiddleware = (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): any => {
   try {
-    const token =
-      req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
+    const token = req.cookies.accessToken || req.headers.authorization;
     if (!token) {
-      return res.status(401).json(new ApiErrorHandler(401, "Unauthorized!"));
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized in middleware!"));
     }
 
     const secret = process.env.JWT_ACCESS_SECRET as string;

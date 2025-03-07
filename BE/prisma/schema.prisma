@@ -8,44 +8,32 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String       @id @default(uuid())
+  email        String       @unique
   password     String
+  name         String?
+  bio          String?
+  age          Int?
+  gender       String?
+  address      String?
+  avatar       String?
+  birthDate    DateTime?
+  phone        String?      @unique
+  location     String?
+  portfolio    String?
+  education    Education[]
+  skills       Skill[]
+  experience   Experience[]
+  hobbies      Hobby[]
   refreshToken String?
-  profile      Profile?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
-
-model Profile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  name       String?
-  bio        String?
-  age        Int?
-  gender     String?
-  address    String?
-  avatar     String?
-  birthDate  DateTime?
-  phone      String?      @unique
-  location   String?
-  portfolio  String?
-  education  Education[]
-  skills     Skill[]
-  experience Experience[]
-  hobbies    Hobby[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Education {
   id String @id @default(uuid())
 
-  Profile   Profile? @relation(fields: [profileId], references: [id])
-  profileId String?
+  Profile User?   @relation(fields: [userId], references: [id])
+  userId  String?
 
   institute    String
   degree       Degree?
@@ -61,8 +49,8 @@ model Education {
 model Skill {
   id String @id @default(uuid())
 
-  Profile   Profile? @relation(fields: [profileId], references: [id])
-  profileId String?
+  Profile User?   @relation(fields: [userId], references: [id])
+  userId  String?
 
   name        String
   level       SkillLevel? @default(BEGINNER)
@@ -74,8 +62,8 @@ model Skill {
 
 model Experience {
   id          String    @id @default(uuid())
-  Profile     Profile?  @relation(fields: [profileId], references: [id])
-  profileId   String?
+  Profile     User?     @relation(fields: [userId], references: [id])
+  userId      String?
   company     String
   role        String
   startDate   DateTime
@@ -88,10 +76,10 @@ model Experience {
 }
 
 model Hobby {
-  id        String   @id @default(uuid())
-  Profile   Profile? @relation(fields: [profileId], references: [id])
-  profileId String?
-  name      String
+  id      String  @id @default(uuid())
+  Profile User?   @relation(fields: [userId], references: [id])
+  userId  String?
+  name    String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
