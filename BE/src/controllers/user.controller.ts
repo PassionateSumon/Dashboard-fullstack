@@ -296,6 +296,7 @@ export const updateSkill = async (
     const userId = req?.user?.userId;
     const skillId = req?.params?.sId;
     const inputSkill = req?.body;
+    // console.log(inputSkill)
 
     if (!skillId) {
       return res
@@ -310,6 +311,12 @@ export const updateSkill = async (
       return res
         .status(400)
         .json(new ApiResponseHandler(400, "Can't find skill!"));
+    }
+
+    if (skill.userId !== userId) {
+      return res
+        .status(401)
+        .json(new ApiResponseHandler(401, "Unauthorized to update skill!"));
     }
 
     if (!inputSkill.name) {
@@ -341,7 +348,7 @@ export const updateSkill = async (
       .json(
         new ApiResponseHandler(
           500,
-          "Internal server error at catch in createSkill"
+          "Internal server error at catch in updateSkill"
         )
       );
   }
@@ -412,6 +419,7 @@ export const updateEducation = async (
     const eduId = req?.params?.eId;
     let { institute, degree, fieldOfStudy, startDate, endTime, certificate } =
       req?.body;
+
     if (!eduId) {
       return res
         .status(400)
@@ -428,23 +436,23 @@ export const updateEducation = async (
         .json(new ApiErrorHandler(400, "Can't find education!"));
     }
 
-    if (!institute) {
-      institute = education.institute;
-    }
-
-    if (!startDate) {
-      startDate = education.startDate;
+    if (education.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to update education!"));
     }
 
     await prisma.education.update({
       where: { id: eduId },
       data: {
-        institute,
-        degree,
-        fieldOfStudy,
-        startDate: new Date(startDate).toISOString(),
-        endTime: new Date(endTime).toISOString(),
-        certificate,
+        institute: institute || education.institute,
+        degree: degree ?? null,
+        fieldOfStudy: fieldOfStudy ?? null,
+        startDate: startDate
+          ? new Date(startDate).toISOString()
+          : education.startDate,
+        endTime: endTime ? new Date(endTime).toISOString() : null,
+        certificate: certificate ?? null,
       },
     });
 
@@ -453,13 +461,12 @@ export const updateEducation = async (
       include: { education: true },
       omit: { password: true, refreshToken: true },
     });
-    console.log("7");
+
     if (!user) {
       return res
         .status(400)
         .json(new ApiResponseHandler(400, "Can't find user!"));
     }
-    console.log("8");
 
     return res
       .status(200)
@@ -479,19 +486,207 @@ export const updateEducation = async (
 export const createHobby = async (
   req: AuthRequest,
   res: Response
-): Promise<any> => {};
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const { name } = req?.body;
+
+  try {
+    if (!name) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Name is required!"));
+    }
+
+    await prisma.hobby.create({
+      data: {
+        userId: id,
+        name,
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { hobbies: true },
+      omit: { password: true, refreshToken: true },
+    });
+    if (!user) {
+      return res
+        .status(400)
+        .json(new ApiResponseHandler(400, "Can't find user!"));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Hobby added.", user));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(new ApiErrorHandler(500, "Internal server error to create hobby!"));
+  }
+};
 
 export const updateHobby = async (
   req: AuthRequest,
   res: Response
-): Promise<any> => {};
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const hId = req?.params?.hId;
+  const { name } = req?.body;
+  try {
+    if (!hId)
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Hobby id is required!"));
+    if (!name)
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Name is required!"));
+    const hobby = await prisma.hobby.findUnique({ where: { id: hId } });
+    if (hobby?.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to update hobby!"));
+    }
+    await prisma.hobby.update({
+      where: { id: hId },
+      data: {
+        name,
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { hobbies: true },
+      omit: { password: true, refreshToken: true },
+    });
+    if (!user) {
+      return res
+        .status(400)
+        .json(new ApiResponseHandler(400, "Can't find user!"));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Hobby updated.", user));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(new ApiErrorHandler(500, "Internal server error to update hobby!"));
+  }
+};
 
 export const createExperience = async (
   req: AuthRequest,
   res: Response
-): Promise<any> => {};
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const { company, role, startDate, endDate, description, certificate } =
+    req?.body;
+
+  try {
+    if (!company || !role || !startDate) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Credentials are required!"));
+    }
+
+    await prisma.experience.create({
+      data: {
+        userId: id,
+        company,
+        role,
+        startDate: new Date(startDate).toISOString(),
+        endDate: endDate ? new Date(endDate).toISOString() : null,
+        description,
+        certificate,
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { experience: true },
+      omit: { password: true, refreshToken: true },
+    });
+    if (!user) {
+      return res
+        .status(400)
+        .json(new ApiResponseHandler(400, "Can't find user!"));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Experience added.", user));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(500, "Internal server error to create experience!")
+      );
+  }
+};
 
 export const updateExperience = async (
   req: AuthRequest,
   res: Response
-): Promise<any> => {};
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const exId = req?.params?.exId;
+  const { company, role, startDate, endDate, description, certificate } =
+    req?.body;
+
+  try {
+    if (!exId) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Experience id is required!"));
+    }
+    const exp = await prisma.experience.findUnique({
+      where: { id: exId },
+    });
+    if (!exp) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Experience can't find!"));
+    }
+    if (exp.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to update experience!"));
+    }
+
+    await prisma.experience.update({
+      where: { id: exId },
+      data: {
+        company: company || exp.company,
+        role: role || exp.role,
+        startDate: startDate
+          ? new Date(startDate).toISOString()
+          : exp.startDate,
+        endDate: endDate ? new Date(endDate).toISOString() : exp.endDate,
+        description: description ?? exp.description,
+        certificate: certificate ?? exp.certificate,
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { experience: true },
+      omit: { password: true, refreshToken: true },
+    });
+    if (!user) {
+      return res
+        .status(400)
+        .json(new ApiResponseHandler(400, "Can't find user!"));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Experience updated.", user));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(500, "Internal server error to update experience!")
+      );
+  }
+};
