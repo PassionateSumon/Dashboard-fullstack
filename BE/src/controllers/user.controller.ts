@@ -6,6 +6,7 @@ import ApiResponseHandler from "../utils/ApiResponseHandler.utils";
 import prisma from "../db/db";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 import { AuthRequest } from "../middlewares/auth.middleware";
+import cloudinary from "../config/cloudinary";
 
 export const signup = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -171,6 +172,12 @@ export const getProfile = async (
     const id = req?.user?.userId;
     const user = await prisma.user.findUnique({
       where: { id },
+      include: {
+        skills: true,
+        experience: true,
+        hobbies: true,
+        education: true,
+      },
       omit: { password: true, refreshToken: true },
     });
 
@@ -284,6 +291,39 @@ export const createSkill = async (
           500,
           "Internal server error at catch in createSkill"
         )
+      );
+  }
+};
+
+export const getAllSkills = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { skills: true },
+    });
+    if (!user) {
+      return res.status(400).json(new ApiErrorHandler(400, "Can't find user!"));
+    }
+    if (!user.skills) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find any skill!"));
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponseHandler(200, "Successfully fetched skills.", user.skills)
+      );
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(500, "Internal server error to get all skills!")
       );
   }
 };
@@ -410,6 +450,43 @@ export const createEducation = async (
   }
 };
 
+export const getAllEducations = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { education: true },
+    });
+    if (!user) {
+      return res.status(400).json(new ApiErrorHandler(400, "Can't find user!"));
+    }
+    if (!user.education) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find any skill!"));
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponseHandler(
+          200,
+          "Successfully fetched skills.",
+          user.education
+        )
+      );
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(500, "Internal server error to get all education!")
+      );
+  }
+};
+
 export const updateEducation = async (
   req: AuthRequest,
   res: Response
@@ -525,6 +602,43 @@ export const createHobby = async (
   }
 };
 
+export const getAllHobbies = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { hobbies: true },
+    });
+    if (!user) {
+      return res.status(400).json(new ApiErrorHandler(400, "Can't find user!"));
+    }
+    if (!user.hobbies) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find any skill!"));
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponseHandler(
+          200,
+          "Successfully fetched skills.",
+          user.hobbies
+        )
+      );
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(500, "Internal server error to get all hobbies!")
+      );
+  }
+};
+
 export const updateHobby = async (
   req: AuthRequest,
   res: Response
@@ -625,6 +739,43 @@ export const createExperience = async (
   }
 };
 
+export const getAllExperiences = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { experience: true },
+    });
+    if (!user) {
+      return res.status(400).json(new ApiErrorHandler(400, "Can't find user!"));
+    }
+    if (!user.experience) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find any skill!"));
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponseHandler(
+          200,
+          "Successfully fetched skills.",
+          user.experience
+        )
+      );
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(500, "Internal server error to get all experience!")
+      );
+  }
+};
+
 export const updateExperience = async (
   req: AuthRequest,
   res: Response
@@ -687,6 +838,123 @@ export const updateExperience = async (
       .status(500)
       .json(
         new ApiErrorHandler(500, "Internal server error to update experience!")
+      );
+  }
+};
+
+export const deleteSingleExperience = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const exId = req?.params?.exId;
+
+  try {
+    if (!exId) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Experience id is required!"));
+    }
+
+    const exp = await prisma.experience.findUnique({ where: { id: exId } });
+    if (!exp) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find experience!"));
+    }
+
+    if (exp.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to delete experience!"));
+    }
+
+    if (exp.certificate) {
+      const publicId = exp.certificate
+        .split("/")
+        .slice(-2)
+        .join("/")
+        .replace(".jpg", "")
+        .replace(".jpeg", "")
+        .replace(".png", "")
+        .replace(".pdf", "");
+
+      // console.log(exp.certificate.split("/"));
+      // console.log(exp.certificate.split("/").slice(-2));
+      // console.log(exp.certificate.split("/").slice(-2).join("/"));
+      // console.log(publicId);
+
+      try {
+        await cloudinary.uploader.destroy(publicId);
+      } catch (error) {
+        console.error(
+          "Error deleting the Experience file from cloudinary!",
+          error
+        );
+      }
+    }
+
+    await prisma.experience.delete({
+      where: { id: exId },
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Experience deleted successfully."));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error at delete single experience!"
+        )
+      );
+  }
+};
+
+export const deleteAllExperiences = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  try {
+    const experiences = await prisma.experience.findMany({
+      where: { userId: id },
+      select: { id: true, certificate: true },
+    });
+
+    if (experiences.length === 0) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find any experiences!"));
+    }
+
+    const publicIds = experiences
+      .map((exp) => exp.certificate)
+      .filter((cerUrl) => cerUrl)
+      .map((url) => {
+        const parts = url?.split("/");
+        const fName = parts && parts[parts?.length - 1].split(".")[0];
+        return `certificates/${fName}`;
+      });
+
+    if (publicIds.length > 0) {
+      await cloudinary.api.delete_resources(publicIds);
+    }
+
+    await prisma.experience.deleteMany({ where: { userId: id } });
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Deleted all experiences."));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error at catch while deleting all the experiences!"
+        )
       );
   }
 };
