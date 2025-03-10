@@ -328,6 +328,40 @@ export const getAllSkills = async (
   }
 };
 
+export const getSingleSkill = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const sId = req?.params?.sId;
+
+  try {
+    if (!sId) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Skill id is needed!"));
+    }
+    const skill = await prisma.skill.findUnique({ where: { id: sId } });
+    if (!skill) {
+      return res.status(400).json(new ApiErrorHandler(400, "Can't get skill!"));
+    }
+    if (skill.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to get skill!"));
+    }
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Get successfully.", skill));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(500, "Internal server error to get single skill!")
+      );
+  }
+};
+
 export const updateSkill = async (
   req: AuthRequest,
   res: Response
@@ -389,6 +423,112 @@ export const updateSkill = async (
         new ApiResponseHandler(
           500,
           "Internal server error at catch in updateSkill"
+        )
+      );
+  }
+};
+
+export const deleteSingleSkill = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const sId = req?.params?.sId;
+
+  try {
+    if (!sId) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Skill id must be needed!"));
+    }
+    const skill = await prisma.skill.findUnique({ where: { id: sId } });
+    if (!skill) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find skill!"));
+    }
+    if (skill.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to delete skill!"));
+    }
+
+    if (skill.certificate) {
+      const publicId = skill.certificate
+        ?.split("/")
+        .slice(-2)
+        .join("/")
+        .replace(".jpg", " ")
+        .replace(".png", " ")
+        .replace(".jpeg", " ")
+        .replace(".pdf", " ");
+
+      try {
+        await cloudinary.uploader.destroy(publicId);
+      } catch (error) {
+        console.error(
+          "Error while delete skill certificate in cloudinary!",
+          error
+        );
+      }
+    }
+
+    await prisma.skill.delete({ where: { id: sId } });
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Skill successfully deleted!"));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error at catch to delete skill!"
+        )
+      );
+  }
+};
+
+export const deleteAllSkills = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  try {
+    const skills = await prisma.skill.findMany({
+      where: { userId: id },
+      select: { id: true, certificate: true },
+    });
+
+    if (skills.length === 0) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find skills!"));
+    }
+
+    const publicIds = skills
+      .map((s) => s.certificate)
+      .filter((cer) => cer)
+      .map((url) => {
+        const parts = url?.split("/");
+        const fName = parts && parts[parts?.length - 1].split(".")[0];
+        return `certificates/${fName}`;
+      });
+
+    if (publicIds.length > 0) await cloudinary.api.delete_resources(publicIds);
+
+    await prisma.skill.deleteMany({ where: { userId: id } });
+
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Successfully deleted all skills."));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error at catch to delete all skills!"
         )
       );
   }
@@ -487,6 +627,45 @@ export const getAllEducations = async (
   }
 };
 
+export const getSingleEducation = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const eId = req?.params?.eId;
+
+  try {
+    if (!eId) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Education id is needed!"));
+    }
+    const education = await prisma.education.findUnique({ where: { id: eId } });
+    if (!education) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't get education!"));
+    }
+    if (education.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to get education!"));
+    }
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Get successfully.", education));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error to get single education!"
+        )
+      );
+  }
+};
+
 export const updateEducation = async (
   req: AuthRequest,
   res: Response
@@ -555,6 +734,74 @@ export const updateEducation = async (
         new ApiErrorHandler(
           500,
           "Internal server error at catch in updateEducation!"
+        )
+      );
+  }
+};
+
+export const deleteSingleEducation = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const eId = req?.params?.eId;
+
+  try {
+    if (!eId) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Education id is required!"));
+    }
+
+    const edu = await prisma.education.findUnique({
+      where: { id: eId },
+      select: { id: true, certificate: true, userId: true },
+    });
+    if (!edu)
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find education!"));
+
+    if (edu.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to delete education!"));
+    }
+
+    await prisma.education.delete({ where: { id: eId } });
+
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Education deleted successfully."));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error at catch while deleting single education!"
+        )
+      );
+  }
+};
+
+export const deleteAllEducations = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  try {
+    await prisma.education.deleteMany({ where: { userId: id } });
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "All educations deleted."));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error at catch while deleting all the educations!"
         )
       );
   }
@@ -639,6 +886,42 @@ export const getAllHobbies = async (
   }
 };
 
+export const getSingleHobby = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const hId = req?.params?.hId;
+  try {
+    if (!hId) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Hobby id is required!"));
+    }
+    const hobby = await prisma.hobby.findUnique({ where: { id: hId } });
+    if (!hobby) {
+      return res.status(400).json(new ApiErrorHandler(400, "Can't get hobby!"));
+    }
+    if (hobby.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to get hobby!"));
+    }
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Get successfully.", hobby));
+  } catch (error) {
+    res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error at catch to get single hobby!"
+        )
+      );
+  }
+};
+
 export const updateHobby = async (
   req: AuthRequest,
   res: Response
@@ -708,6 +991,10 @@ export const deleteSingleHobby = async (
       return res
         .status(400)
         .json(new ApiErrorHandler(400, "Can't find hobby!"));
+    if (hobby.userId !== id)
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unathorized to delete hobby!"));
 
     await prisma.hobby.delete({ where: { id: hId } });
 
@@ -826,7 +1113,44 @@ export const getAllExperiences = async (
   }
 };
 
-// get single experience
+export const getSingleExperience = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const eId = req?.params?.eId;
+
+  try {
+    if (!eId) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Experience id is needed!"));
+    }
+    const exp = await prisma.experience.findUnique({ where: { id: eId } });
+    if (!exp) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't get experience!"));
+    }
+    if (exp.userId !== id) {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Unauthorized to get experience!"));
+    }
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Get successfully.", exp));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error to get single experience!"
+        )
+      );
+  }
+};
 
 export const updateExperience = async (
   req: AuthRequest,
@@ -930,11 +1254,6 @@ export const deleteSingleExperience = async (
         .replace(".jpeg", "")
         .replace(".png", "")
         .replace(".pdf", "");
-
-      // console.log(exp.certificate.split("/"));
-      // console.log(exp.certificate.split("/").slice(-2));
-      // console.log(exp.certificate.split("/").slice(-2).join("/"));
-      // console.log(publicId);
 
       try {
         await cloudinary.uploader.destroy(publicId);
