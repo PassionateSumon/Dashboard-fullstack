@@ -689,6 +689,56 @@ export const updateHobby = async (
   }
 };
 
+export const deleteSingleHobby = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  const hId = req?.params?.hId;
+
+  try {
+    if (!hId) {
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Hobby id is required!"));
+    }
+
+    const hobby = await prisma.hobby.findUnique({ where: { id: hId } });
+    if (!hobby)
+      return res
+        .status(400)
+        .json(new ApiErrorHandler(400, "Can't find hobby!"));
+
+    await prisma.hobby.delete({ where: { id: hId } });
+
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "Hobby deleted successfully."));
+  } catch (error) {}
+};
+
+export const deleteAllHobbies = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  const id = req?.user?.userId;
+  try {
+    await prisma.hobby.deleteMany({ where: { userId: id } });
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "All hobbies deleted."));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        new ApiErrorHandler(
+          500,
+          "Internal server error at catch while deleting all the hobbies!"
+        )
+      );
+  }
+};
+
 export const createExperience = async (
   req: AuthRequest,
   res: Response
@@ -775,6 +825,8 @@ export const getAllExperiences = async (
       );
   }
 };
+
+// get single experience
 
 export const updateExperience = async (
   req: AuthRequest,
