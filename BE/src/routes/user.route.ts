@@ -30,6 +30,7 @@ import {
   updateHobby,
   updateProfile,
   updateSkill,
+  validateToken,
 } from "../controllers/user.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import upload from "../config/multer";
@@ -39,6 +40,7 @@ const userRouter = express.Router();
 
 userRouter.post("/signup", signup);
 userRouter.post("/login", login);
+userRouter.get("/verify-token", validateToken);
 userRouter.post("/logout", authMiddleware, logout);
 userRouter.post("/refresh", authMiddleware, refresh);
 //******************************************************************************** */

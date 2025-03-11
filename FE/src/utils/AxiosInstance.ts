@@ -33,7 +33,12 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const res = await axiosInstance.post("/refresh");
+        const res = await axios.post(
+          "http://localhost:5008/api/v1/users/refresh",
+          {
+            withCredentials: true,
+          }
+        );
         const newAccessToken = (res.data as any).newAccessToken;
         localStorage.setItem("accessToken", newAccessToken);
 

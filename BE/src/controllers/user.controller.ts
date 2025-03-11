@@ -74,13 +74,15 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       data: { refreshToken },
     });
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-    });
+    res
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      })
+      .cookie("accessToken", accessToken);
 
-    res.json({ accessToken });
+    res.status(200).json(new ApiResponseHandler(200, "login successful."));
   } catch (error) {
     return res
       .status(500)
@@ -134,6 +136,29 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     return res
       .status(500)
       .json(new ApiErrorHandler(500, "Internal server error at refresh!"));
+  }
+};
+
+export const validateToken = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const accessToken = req?.cookies?.accessToken;
+    const isMatched = jwt.verify(
+      accessToken,
+      process.env.JWT_ACCESS_SECRET as string
+    );
+    if (!isMatched) {
+      return res
+        .status(403)
+        .json(new ApiErrorHandler(403, "Access token not found!"));
+    }
+    return res.status(200).json(new ApiResponseHandler(200, "token verified!"));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(new ApiErrorHandler(500, "Internal server error at verifyToken!"));
   }
 };
 
@@ -226,6 +251,12 @@ export const updateProfile = async (
       where: { id },
       update: input,
       create: input,
+      include: {
+        skills: true,
+        experience: true,
+        education: true,
+        hobbies: true,
+      },
       omit: { password: true, refreshToken: true },
     });
 

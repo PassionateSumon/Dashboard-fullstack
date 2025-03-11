@@ -14,7 +14,7 @@ export const authMiddleware = (
   next: NextFunction
 ): any => {
   try {
-    const token = req.cookies.accessToken || req.headers.authorization;
+    const token = req?.cookies.accessToken || req?.headers.authorization;
     if (!token) {
       return res
         .status(401)
