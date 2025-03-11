@@ -586,7 +586,7 @@ export const createEducation = async (
         .json(new ApiErrorHandler(400, "startdate is required!"));
     }
 
-    await prisma.education.create({
+    const newEducation = await prisma.education.create({
       data: {
         userId: id,
         startDate: new Date(startDate).toISOString(),
@@ -594,20 +594,9 @@ export const createEducation = async (
       },
     });
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: { education: true },
-      omit: { password: true, refreshToken: true },
-    });
-    if (!user) {
-      return res
-        .status(400)
-        .json(new ApiResponseHandler(400, "Can't find user!"));
-    }
-
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Skill created.", user));
+      .json(new ApiResponseHandler(200, "Skill created.", newEducation));
   } catch (error) {
     console.log(error);
     return res
@@ -729,7 +718,7 @@ export const updateEducation = async (
         .json(new ApiErrorHandler(401, "Unauthorized to update education!"));
     }
 
-    await prisma.education.update({
+    const updatedEducation = await prisma.education.update({
       where: { id: eduId },
       data: {
         institute: institute || education.institute,
@@ -743,21 +732,9 @@ export const updateEducation = async (
       },
     });
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: { education: true },
-      omit: { password: true, refreshToken: true },
-    });
-
-    if (!user) {
-      return res
-        .status(400)
-        .json(new ApiResponseHandler(400, "Can't find user!"));
-    }
-
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Education updated.", user));
+      .json(new ApiResponseHandler(200, "Education updated.", updatedEducation));
   } catch (error) {
     return res
       .status(500)
@@ -799,11 +776,11 @@ export const deleteSingleEducation = async (
         .json(new ApiErrorHandler(401, "Unauthorized to delete education!"));
     }
 
-    await prisma.education.delete({ where: { id: eId } });
+    const deletedItem = await prisma.education.delete({ where: { id: eId } });
 
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Education deleted successfully."));
+      .json(new ApiResponseHandler(200, "Education deleted successfully.", deletedItem));
   } catch (error) {
     return res
       .status(500)
@@ -1072,32 +1049,21 @@ export const createExperience = async (
         .json(new ApiErrorHandler(400, "Credentials are required!"));
     }
 
-    await prisma.experience.create({
+    const newExp = await prisma.experience.create({
       data: {
         userId: id,
         company,
         role,
         startDate: new Date(startDate).toISOString(),
         endDate: endDate ? new Date(endDate).toISOString() : null,
-        description,
-        certificate,
+        description: description ?? null,
+        certificate: certificate ?? null,
       },
     });
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: { experience: true },
-      omit: { password: true, refreshToken: true },
-    });
-    if (!user) {
-      return res
-        .status(400)
-        .json(new ApiResponseHandler(400, "Can't find user!"));
-    }
-
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Experience added.", user));
+      .json(new ApiResponseHandler(200, "Experience added.", newExp));
   } catch (error) {
     return res
       .status(500)
@@ -1212,7 +1178,7 @@ export const updateExperience = async (
         .json(new ApiErrorHandler(401, "Unauthorized to update experience!"));
     }
 
-    await prisma.experience.update({
+    const updatedExp = await prisma.experience.update({
       where: { id: exId },
       data: {
         company: company || exp.company,
@@ -1226,20 +1192,9 @@ export const updateExperience = async (
       },
     });
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: { experience: true },
-      omit: { password: true, refreshToken: true },
-    });
-    if (!user) {
-      return res
-        .status(400)
-        .json(new ApiResponseHandler(400, "Can't find user!"));
-    }
-
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Experience updated.", user));
+      .json(new ApiResponseHandler(200, "Experience updated.", updatedExp));
   } catch (error) {
     return res
       .status(500)
@@ -1296,13 +1251,13 @@ export const deleteSingleExperience = async (
       }
     }
 
-    await prisma.experience.delete({
+    const deletedExp = await prisma.experience.delete({
       where: { id: exId },
     });
 
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Experience deleted successfully."));
+      .json(new ApiResponseHandler(200, "Experience deleted successfully.", deletedExp));
   } catch (error) {
     return res
       .status(500)

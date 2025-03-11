@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../utils/AxiosInstance";
 import { updateEducation } from "./ProfileSlice";
 
@@ -118,54 +118,78 @@ const deleteAllEducations = createAsyncThunk(
   }
 );
 
-
 const eduSlice = createSlice({
   name: "education",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-    .addCase(getAllEducations.pending,(state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(getAllEducations.fulfilled,(state, action: any) => {
-      state.loading = false;
-      state.error = null;
-      state.educations = action.payload;
-    })
-    .addCase(getAllEducations.rejected,(state, action:any) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
-    .addCase(createEducation.pending,(state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(createEducation.fulfilled,(state, action: any) => {
-      state.loading = false;
-      state.error = null;
-      state.educations.push(action.payload);
-    })
-    .addCase(createEducation.rejected,(state, action:any) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
-    .addCase(updateEdu.pending,(state) => {
-      state.loading = true;
-    })
-    .addCase(updateEdu.fulfilled,(state, action:any) => {
-      state.loading = false;
-      const ind = state.educations.findIndex(e => e.id === action.payload?.id);
-      if(ind !== -1) {
-        state.educations[ind] = action.payload;
-      }
-    })
-    .addCase(updateEdu.rejected,(state, action:any) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
-  }
+      .addCase(getAllEducations.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllEducations.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.error = null;
+        state.educations = action.payload;
+      })
+      .addCase(getAllEducations.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(createEducation.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createEducation.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.educations = [...state.educations, action.payload];
+      })
+      .addCase(createEducation.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateEdu.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateEdu.fulfilled, (state, action: any) => {
+        state.loading = false;
+        const ind = state.educations.findIndex(
+          (e) => e.id === action.payload?.id
+        );
+        if (ind !== -1) {
+          state.educations[ind] = action.payload;
+        }
+      })
+      .addCase(updateEdu.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteSingleEducation.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteSingleEducation.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.educations = state.educations.filter(
+          (e) => e.id !== action.payload?.id
+        );
+      })
+      .addCase(deleteSingleEducation.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteAllEducations.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteAllEducations.fulfilled, (state) => {
+        state.loading = false;
+        state.educations = [];
+      })
+      .addCase(deleteAllEducations.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
 });
 
 export default eduSlice;

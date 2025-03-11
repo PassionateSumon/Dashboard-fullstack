@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface Hobby {
+  id: string;
   name: string;
 }
 
