@@ -97,7 +97,7 @@ const deleteSingleExperience = createAsyncThunk(
 );
 
 const deleteAllExperiences = createAsyncThunk(
-  "user/delete-one-exp",
+  "user/delete-all-exps",
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.delete(`delete-all-experience`);
@@ -109,7 +109,7 @@ const deleteAllExperiences = createAsyncThunk(
   }
 );
 
-const eduSlice = createSlice({
+const expSlice = createSlice({
   name: "experience",
   initialState,
   reducers: {},
@@ -180,4 +180,4 @@ const eduSlice = createSlice({
   },
 });
 
-export default eduSlice;
+export default expSlice;

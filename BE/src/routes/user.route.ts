@@ -95,7 +95,7 @@ userRouter.delete("/delete-all-educations", authMiddleware, deleteAllEducations)
 //******************************************************************************** */
 userRouter.post("/create-hobby", authMiddleware, createHobby);
 userRouter.get("/get-all-hobbies", authMiddleware, getAllHobbies);
-userRouter.get("/get-single-hobbie/:hId", authMiddleware, getSingleHobby);
+userRouter.get("/get-single-hobby/:hId", authMiddleware, getSingleHobby);
 userRouter.put("/update-hobby/:hId", authMiddleware, updateHobby);
 userRouter.delete(
   "/delete-single-hobby/:hId",

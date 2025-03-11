@@ -293,27 +293,16 @@ export const createSkill = async (
         .json(new ApiErrorHandler(400, "Skill name is required!"));
     }
 
-    await prisma.skill.create({
+    const newSkill = await prisma.skill.create({
       data: {
         userId: id,
         ...inputSkill,
       },
     });
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: { skills: true },
-      omit: { password: true, refreshToken: true },
-    });
-    if (!user) {
-      return res
-        .status(400)
-        .json(new ApiResponseHandler(400, "Can't find user!"));
-    }
-
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Skill created.", user));
+      .json(new ApiResponseHandler(200, "Skill created.", newSkill));
   } catch (error) {
     return res
       .status(500)
@@ -428,25 +417,14 @@ export const updateSkill = async (
       inputSkill.name = skill.name;
     }
 
-    await prisma.skill.update({
+    const updatedSkill = await prisma.skill.update({
       where: { id: skillId },
       data: { ...inputSkill },
     });
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { skills: true },
-      omit: { password: true, refreshToken: true },
-    });
-    if (!user) {
-      return res
-        .status(400)
-        .json(new ApiResponseHandler(400, "Can't find user!"));
-    }
-
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Skill updated.", user));
+      .json(new ApiResponseHandler(200, "Skill updated.", updatedSkill));
   } catch (error) {
     return res
       .status(500)
@@ -504,10 +482,10 @@ export const deleteSingleSkill = async (
       }
     }
 
-    await prisma.skill.delete({ where: { id: sId } });
+    const deletedSkill = await prisma.skill.delete({ where: { id: sId } });
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Skill successfully deleted!"));
+      .json(new ApiResponseHandler(200, "Skill successfully deleted!", deletedSkill));
   } catch (error) {
     return res
       .status(500)
@@ -829,27 +807,16 @@ export const createHobby = async (
         .json(new ApiErrorHandler(400, "Name is required!"));
     }
 
-    await prisma.hobby.create({
+    const newHobby = await prisma.hobby.create({
       data: {
         userId: id,
         name,
       },
     });
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: { hobbies: true },
-      omit: { password: true, refreshToken: true },
-    });
-    if (!user) {
-      return res
-        .status(400)
-        .json(new ApiResponseHandler(400, "Can't find user!"));
-    }
-
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Hobby added.", user));
+      .json(new ApiResponseHandler(200, "Hobby added.", newHobby));
   } catch (error) {
     return res
       .status(500)
@@ -952,27 +919,16 @@ export const updateHobby = async (
         .status(401)
         .json(new ApiErrorHandler(401, "Unauthorized to update hobby!"));
     }
-    await prisma.hobby.update({
+    const updatedHobby = await prisma.hobby.update({
       where: { id: hId },
       data: {
         name,
       },
     });
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: { hobbies: true },
-      omit: { password: true, refreshToken: true },
-    });
-    if (!user) {
-      return res
-        .status(400)
-        .json(new ApiResponseHandler(400, "Can't find user!"));
-    }
-
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Hobby updated.", user));
+      .json(new ApiResponseHandler(200, "Hobby updated.", updateHobby));
   } catch (error) {
     return res
       .status(500)
@@ -1004,11 +960,11 @@ export const deleteSingleHobby = async (
         .status(401)
         .json(new ApiErrorHandler(401, "Unathorized to delete hobby!"));
 
-    await prisma.hobby.delete({ where: { id: hId } });
+    const deletedHobby = await prisma.hobby.delete({ where: { id: hId } });
 
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Hobby deleted successfully."));
+      .json(new ApiResponseHandler(200, "Hobby deleted successfully.", deletedHobby));
   } catch (error) {}
 };
 

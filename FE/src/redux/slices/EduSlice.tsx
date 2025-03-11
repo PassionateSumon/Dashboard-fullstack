@@ -32,7 +32,7 @@ const initialState: EduState = {
   error: null,
 };
 
-const getAllEducations = createAsyncThunk(
+export const getAllEducations = createAsyncThunk(
   "user/get-all-edu",
   async (_, { rejectWithValue, dispatch }) => {
     try {
@@ -45,7 +45,7 @@ const getAllEducations = createAsyncThunk(
   }
 );
 
-const createEducation = createAsyncThunk(
+export const createEducation = createAsyncThunk(
   "user/create-edu",
   async ({ institute, startDate }: any, { rejectWithValue, dispatch }) => {
     try {
@@ -61,7 +61,7 @@ const createEducation = createAsyncThunk(
   }
 );
 
-const updateEdu = createAsyncThunk(
+export const updateEdu = createAsyncThunk(
   "user/update-edu",
   async (
     {
@@ -92,7 +92,7 @@ const updateEdu = createAsyncThunk(
   }
 );
 
-const deleteSingleEducation = createAsyncThunk(
+export const deleteSingleEducation = createAsyncThunk(
   "user/delete-one-edu",
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
@@ -105,8 +105,8 @@ const deleteSingleEducation = createAsyncThunk(
   }
 );
 
-const deleteAllEducations = createAsyncThunk(
-  "user/delete-one-edu",
+export const deleteAllEducations = createAsyncThunk(
+  "user/delete-all-edus",
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.delete(`delete-all-educations`);
