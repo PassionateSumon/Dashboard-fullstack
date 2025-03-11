@@ -145,16 +145,20 @@ export const validateToken = async (
 ): Promise<any> => {
   try {
     const accessToken = req?.cookies?.accessToken;
+    // console.log(accessToken)
     const isMatched = jwt.verify(
       accessToken,
       process.env.JWT_ACCESS_SECRET as string
     );
+    // console.log(isMatched)
     if (!isMatched) {
       return res
         .status(403)
         .json(new ApiErrorHandler(403, "Access token not found!"));
     }
-    return res.status(200).json(new ApiResponseHandler(200, "token verified!"));
+    return res
+      .status(200)
+      .json(new ApiResponseHandler(200, "token verified!", { status: 200 }));
   } catch (error) {
     return res
       .status(500)
@@ -485,7 +489,9 @@ export const deleteSingleSkill = async (
     const deletedSkill = await prisma.skill.delete({ where: { id: sId } });
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Skill successfully deleted!", deletedSkill));
+      .json(
+        new ApiResponseHandler(200, "Skill successfully deleted!", deletedSkill)
+      );
   } catch (error) {
     return res
       .status(500)
@@ -712,7 +718,9 @@ export const updateEducation = async (
 
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Education updated.", updatedEducation));
+      .json(
+        new ApiResponseHandler(200, "Education updated.", updatedEducation)
+      );
   } catch (error) {
     return res
       .status(500)
@@ -758,7 +766,13 @@ export const deleteSingleEducation = async (
 
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Education deleted successfully.", deletedItem));
+      .json(
+        new ApiResponseHandler(
+          200,
+          "Education deleted successfully.",
+          deletedItem
+        )
+      );
   } catch (error) {
     return res
       .status(500)
@@ -964,7 +978,9 @@ export const deleteSingleHobby = async (
 
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Hobby deleted successfully.", deletedHobby));
+      .json(
+        new ApiResponseHandler(200, "Hobby deleted successfully.", deletedHobby)
+      );
   } catch (error) {}
 };
 
@@ -1213,7 +1229,13 @@ export const deleteSingleExperience = async (
 
     return res
       .status(200)
-      .json(new ApiResponseHandler(200, "Experience deleted successfully.", deletedExp));
+      .json(
+        new ApiResponseHandler(
+          200,
+          "Experience deleted successfully.",
+          deletedExp
+        )
+      );
   } catch (error) {
     return res
       .status(500)

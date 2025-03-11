@@ -8,19 +8,22 @@ import { UiProvider } from "./context/UiContext.tsx";
 import { ExperienceProvider } from "./context/ExperienceContext.tsx";
 import { HobbyProvider } from "./context/HobbyContext.tsx";
 import { SkillProvider } from "./context/SkillContext.tsx";
+import { BrowserRouter as Router } from "react-router-dom";
 
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
-    <UiProvider>
-      <SkillProvider>
-        <ExperienceProvider>
-          <EduProvider>
-            <HobbyProvider>
-              <App />
-            </HobbyProvider>
-          </EduProvider>
-        </ExperienceProvider>
-      </SkillProvider>
-    </UiProvider>
+    <Router>
+      <UiProvider>
+        <SkillProvider>
+          <ExperienceProvider>
+            <EduProvider>
+              <HobbyProvider>
+                <App />
+              </HobbyProvider>
+            </EduProvider>
+          </ExperienceProvider>
+        </SkillProvider>
+      </UiProvider>
+    </Router>
   </Provider>
 );

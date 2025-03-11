@@ -1,5 +1,38 @@
 import axios from "axios";
 
+class LoadingManager {
+  private activeRequests: number = 0;
+  private listeners: ((isLoading: boolean) => void)[] = [];
+
+  startLoading() {
+    this.activeRequests++;
+    this.notifyListeners();
+  }
+
+  stopLoading() {
+    this.activeRequests = Math.max(0, this.activeRequests - 1);
+    this.notifyListeners();
+  }
+
+  isLoading(): boolean {
+    return this.activeRequests > 0;
+  }
+
+  subscribe(cb: (isLoading: boolean) => void) {
+    this.listeners.push(cb);
+    return () => {
+      this.listeners = this.listeners.filter((lis) => lis !== cb);
+    };
+  }
+
+  private notifyListeners() {
+    const isLoading = this.isLoading();
+    this.listeners.forEach((lis) => lis(isLoading));
+  }
+}
+
+export const loadingManager = new LoadingManager();
+
 const axiosInstance = axios.create({
   baseURL: "http://localhost:5008/api/v1/users",
   withCredentials: true,
@@ -7,6 +40,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
+    loadingManager.startLoading();
     const accessToken = localStorage.getItem("accessToken");
     if (!config.headers) {
       config.headers = {};
@@ -23,11 +57,17 @@ axiosInstance.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    loadingManager.stopLoading();
+    return Promise.reject(error);
+  }
 );
 
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    loadingManager.stopLoading();
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -49,6 +89,7 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
+    loadingManager.stopLoading();
     return Promise.reject(error);
   }
 );

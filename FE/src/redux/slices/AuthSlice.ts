@@ -1,16 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../utils/AxiosInstance";
+import Cookies from "js-cookie";
 
 interface AuthState {
   accessToken: string | null;
-  isLoggedin: boolean;
+  isLoggedIn: boolean;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: AuthState = {
   accessToken: null,
-  isLoggedin: false,
+  isLoggedIn: false,
   loading: false,
   error: null,
 };
@@ -24,8 +25,11 @@ export const signup = createAsyncThunk(
     try {
       const res = await axiosInstance.post("/signup", { email, password });
       return "Signed up successfully. Please login...";
-    } catch (error) {
-      return rejectWithValue(error);
+    } catch (error: any) {
+      return rejectWithValue({
+        message:
+          error.response?.data?.message || "Something went wrong while signup",
+      });
     }
   }
 );
@@ -37,10 +41,13 @@ export const login = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axiosInstance.post("/signup", { email, password });
-      return (res.data as any).accessToken;
-    } catch (error) {
-      return rejectWithValue(error);
+      const res = await axiosInstance.post("/login", { email, password });
+      return res.data;
+    } catch (error: any) {
+      return rejectWithValue({
+        message:
+          error.response?.data?.message || "Something went wrong while login",
+      });
     }
   }
 );
@@ -50,9 +57,14 @@ export const validateToken = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("/verify-token");
-      return res;
-    } catch (error) {
-      return rejectWithValue(error);
+      // console.log("validate token: ", res);
+      return (res.data as any);
+    } catch (error: any) {
+      return rejectWithValue({
+        message:
+          error.response?.data?.message ||
+          "Something went wrong while validate token",
+      });
     }
   }
 );
@@ -63,15 +75,29 @@ export const refreshToken = createAsyncThunk(
     try {
       const res = await axiosInstance.post("/refresh");
       return (res.data as any)?.newAccessToken; // later
-    } catch (error) {
-      return rejectWithValue(error);
+    } catch (error: any) {
+      return rejectWithValue({
+        message:
+          error.response?.data?.message || "Something went wrong while login",
+      });
     }
   }
 );
 
-export const logout = createAsyncThunk("auth/logout", async () => {
-  await axiosInstance.post("/logout");
-});
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      await axiosInstance.post("/logout");
+      Cookies.remove("accessToken");
+    } catch (error: any) {
+      return rejectWithValue({
+        message:
+          error.response?.data?.message || "Something went wrong while login",
+      });
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -82,6 +108,9 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.accessToken = null;
+    },
+    signin: (state, action) => {
+      state.isLoggedIn = true;
     },
   },
   extraReducers: (builder) => {
@@ -100,16 +129,15 @@ const authSlice = createSlice({
       .addCase(login.pending, (state) => {
         state.loading = true;
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(login.fulfilled, (state) => {
         state.loading = false;
         state.error = null;
-        state.accessToken = action.payload;
-        state.isLoggedin = true;
+        state.isLoggedIn = true;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-        state.isLoggedin = false;
+        state.isLoggedIn = false;
       })
       .addCase(refreshToken.pending, (state) => {
         state.loading = true;
@@ -129,22 +157,25 @@ const authSlice = createSlice({
       .addCase(validateToken.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        if (action.payload?.code < 300) {
-          state.isLoggedin = true;
+        // console.log(action.payload);
+        const code = action.payload?.data?.status;
+        if (code < 300) {
+          state.isLoggedIn = true;
         } else {
-          state.isLoggedin = false;
+          state.isLoggedIn = false;
         }
       })
       .addCase(validateToken.rejected, (state, action) => {
         state.loading = false;
-        state.isLoggedin = false;
+        state.isLoggedIn = false;
         state.error = action.payload as string;
       })
       .addCase(logout.fulfilled, (state) => {
         state.accessToken = null;
-        state.isLoggedin = false;
+        state.isLoggedIn = false;
       });
   },
 });
 
+export const { signin } = authSlice.actions;
 export default authSlice;
