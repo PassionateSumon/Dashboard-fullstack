@@ -19,20 +19,20 @@ const initialState: HobbyState = {
   error: null,
 };
 
-const getAllHobbies = createAsyncThunk(
+export const getAllHobbies = createAsyncThunk(
   "user/get-all-hob",
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.get("get-all-hobbies");
       dispatch(updateHobby(res.data as any));
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const createHobby = createAsyncThunk(
+export const createHobby = createAsyncThunk(
   "user/create-hob",
   async ({ name }: any, { rejectWithValue, dispatch }) => {
     try {
@@ -40,14 +40,14 @@ const createHobby = createAsyncThunk(
         name,
       });
       dispatch(getAllHobbies());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const updateHob = createAsyncThunk(
+export const updateHob = createAsyncThunk(
   "user/update-hob",
   async ({ id, name }: any, { rejectWithValue, dispatch }) => {
     try {
@@ -55,27 +55,27 @@ const updateHob = createAsyncThunk(
         name,
       });
       dispatch(getAllHobbies());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const deleteSingleHobby = createAsyncThunk(
+export const deleteSingleHobby = createAsyncThunk(
   "user/delete-one-hob",
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.delete(`delete-single-hobby/${id}`);
       dispatch(getAllHobbies());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const deleteAllHobbies = createAsyncThunk(
+export const deleteAllHobbies = createAsyncThunk(
   "user/delete-all-hobs",
   async (_, { rejectWithValue, dispatch }) => {
     try {

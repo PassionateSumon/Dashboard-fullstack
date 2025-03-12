@@ -27,59 +27,67 @@ const initialState: SkillState = {
   error: null,
 };
 
-const getAllSkills = createAsyncThunk(
+export const getAllSkills = createAsyncThunk(
   "user/get-all-skill",
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.get("get-all-skills");
       dispatch(updateSkill(res.data as any));
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const createSkill = createAsyncThunk(
+export const createSkill = createAsyncThunk(
   "user/create-skill",
-  async (inputSkill: any, { rejectWithValue, dispatch }) => {
+  async ({ formData }: any, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosInstance.post("create-skill", inputSkill);
+      const res = await axiosInstance.post("create-skill", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       dispatch(getAllSkills());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const updateOneSkill = createAsyncThunk(
+export const updateOneSkill = createAsyncThunk(
   "user/update-skill",
-  async ({ id, inputSkill }: any, { rejectWithValue, dispatch }) => {
+  async ({ id, formData }: any, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosInstance.put(`update-skill/${id}`, inputSkill);
+      const res = await axiosInstance.put(`update-skill/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       dispatch(getAllSkills());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const deleteSingleSkill = createAsyncThunk(
+export const deleteSingleSkill = createAsyncThunk(
   "user/delete-one-skill",
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.delete(`delete-single-skill/${id}`);
       dispatch(getAllSkills());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const deleteAllSkills = createAsyncThunk(
+export const deleteAllSkills = createAsyncThunk(
   "user/delete-all-skills",
   async (_, { rejectWithValue, dispatch }) => {
     try {
