@@ -61,7 +61,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json(new ApiErrorHandler(400, "User not found!"));
     }
 
-    const isValidPassword = bcrypt.compare(password, user.password);
+    const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(400).json(new ApiErrorHandler(400, "Wrong password!"));
     }
@@ -77,7 +77,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     res
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
       })
       .cookie("accessToken", accessToken);
@@ -91,7 +91,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const refresh = async (req: Request, res: Response): Promise<any> => {
-  const { refreshToken } = req.cookies;
+  const { refreshToken } = req?.cookies;
   // console.log(refreshToken);
   if (!refreshToken) {
     return res.status(401).json(new ApiErrorHandler(401, "Unauthorized!"));
@@ -110,8 +110,8 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     });
     if (!user || user.refreshToken !== refreshToken) {
       return res
-        .status(403)
-        .json(new ApiErrorHandler(403, "Invalid refresh token!"));
+        .status(401)
+        .json(new ApiErrorHandler(401, "Invalid refresh token!"));
     }
 
     const newAccessToken = generateAccessToken(user.id);
@@ -123,6 +123,11 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     });
 
     res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // for now true but later it will be changed
+      sameSite: "strict",
+    });
+    res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       secure: true, // for now true but later it will be changed
       sameSite: "strict",
@@ -145,7 +150,7 @@ export const validateToken = async (
 ): Promise<any> => {
   try {
     const accessToken = req?.cookies?.accessToken;
-    // console.log(accessToken)
+    // console.log("verify token: ",accessToken)
     const isMatched = jwt.verify(
       accessToken,
       process.env.JWT_ACCESS_SECRET as string
@@ -181,6 +186,12 @@ export const logout = async (req: Request, res: Response): Promise<any> => {
     await prisma.user.update({
       where: { id: decoded.userId },
       data: { refreshToken: null },
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
     });
 
     return res

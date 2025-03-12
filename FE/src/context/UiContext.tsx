@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-type DashboardTab = "details" | "education" | "skill" | "hobby" | "experience";
+export type DashboardTab = "details" | "education" | "skill" | "hobby" | "experience";
 
 interface UiContextType {
   activeTab: DashboardTab;

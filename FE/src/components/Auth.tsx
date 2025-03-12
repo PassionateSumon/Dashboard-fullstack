@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login, signup } from "../redux/slices/AuthSlice";
 import { AppDispatch } from "../redux/store/store";
 
@@ -19,6 +19,7 @@ const Auth: FC<AuthProps> = ({ from }) => {
     password: "",
   });
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -33,8 +34,9 @@ const Auth: FC<AuthProps> = ({ from }) => {
   const handleSubmit = () => {
     if (from === "signup") {
       dispatch(signup({ email: formData.email, password: formData.password }));
+      navigate("/signin");
     } else if (from === "login") {
-      console.log(from)
+      console.log(from);
       dispatch(login({ email: formData.email, password: formData.password }));
     }
     setFormData({

@@ -38,7 +38,8 @@ export const getAllEducations = createAsyncThunk(
     try {
       const res = await axiosInstance.get("get-all-educations");
       dispatch(updateEducation(res.data as any));
-      return res.data;
+      // console.log(res.data?.data)
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -48,6 +49,7 @@ export const getAllEducations = createAsyncThunk(
 export const createEducation = createAsyncThunk(
   "user/create-edu",
   async ({ institute, startDate }: any, { rejectWithValue, dispatch }) => {
+    // console.log(institute, startDate)
     try {
       const res = await axiosInstance.post("create-education", {
         institute,
@@ -66,26 +68,17 @@ export const updateEdu = createAsyncThunk(
   async (
     {
       id,
-      institute,
-      degree,
-      fieldOfStudy,
-      startDate,
-      endTime,
-      certificate,
+      formData
     }: any,
     { rejectWithValue, dispatch }
   ) => {
     try {
-      const res = await axiosInstance.put(`update-education/${id}`, {
-        institute,
-        degree,
-        fieldOfStudy,
-        startDate,
-        endTime,
-        certificate,
+      const res = await axiosInstance.put(`update-education/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
       dispatch(getAllEducations());
-      return res.data;
+      console.log(res.data);
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -143,7 +136,9 @@ const eduSlice = createSlice({
       })
       .addCase(createEducation.fulfilled, (state, action: any) => {
         state.loading = false;
+        // console.log(action.payload)
         state.educations = [...state.educations, action.payload];
+        // console.log(state.educations)
       })
       .addCase(createEducation.rejected, (state, action: any) => {
         state.loading = false;
@@ -154,9 +149,12 @@ const eduSlice = createSlice({
       })
       .addCase(updateEdu.fulfilled, (state, action: any) => {
         state.loading = false;
+        console.log(action.payload);
         const ind = state.educations.findIndex(
           (e) => e.id === action.payload?.id
         );
+        console.log("ind: ", ind);
+        console.log(state.educations);
         if (ind !== -1) {
           state.educations[ind] = action.payload;
         }

@@ -1,69 +1,69 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllEducations,
-  deleteSingleEducation,
-} from "../redux/slices/EduSlice";
-import { useEduContext } from "../context/EduContext";
 import { AppDispatch, RootState } from "../redux/store/store";
-import EducationForm from "./EducationForm";
+import { useExperienceContext } from "../context/ExperienceContext";
+import {
+  deleteSingleExperience,
+  getAllExperiences,
+} from "../redux/slices/ExpSlice";
+import ExperienceForm from "./ExperienceForm";
 
-const EducationManager = () => {
+const ExperiencesManager = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const {
-    educations = [],
+    experiences = [],
     loading,
     error,
-  } = useSelector((state: RootState) => state.education);
+  } = useSelector((state: RootState) => state.experience);
 
-  const { toggleModal, openEditModal } = useEduContext();
+  const { toggleModal, openEditModal } = useExperienceContext();
 
   useEffect(() => {
-    dispatch(getAllEducations());
+    dispatch(getAllExperiences());
   }, [dispatch]);
 
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Education Manager</h2>
+      <h2 className="text-2xl font-bold mb-4">Experience Manager</h2>
 
       <button
         onClick={toggleModal}
         className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
       >
-        Add New Education
+        Add New Experience
       </button>
 
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">Error: {error}</p>}
 
-      {Array.isArray(educations) && educations.length > 0 ? (
+      {Array.isArray(experiences) && experiences.length > 0 ? (
         <ul className="space-y-4 p-4 max-h-96 overflow-y-auto rounded-lg">
-          {educations.map((edu) => (
+          {experiences.map((exp) => (
             <li
-              key={edu.id}
+              key={exp.id}
               className="p-4 border rounded-lg flex justify-between items-center"
             >
               <div>
-                <h3 className="font-semibold">{edu.institute || "N/A"}</h3>
+                <h3 className="font-semibold">{exp.company || "N/A"}</h3>
                 <p className="text-sm text-gray-600">
-                  {new Date(edu.startDate).toISOString().split("T")[0] || "N/A"}{" "}
+                  {new Date(exp.startDate).toISOString().split("T")[0] || "N/A"}{" "}
                   -{" "}
-                  {edu.endTime
-                    ? new Date(edu.endTime).toISOString().split("T")[0]
+                  {exp.endDate
+                    ? new Date(exp.endDate).toISOString().split("T")[0]
                     : "Present"}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Degree: {edu.degree || "N/A"}
+                  Role: {exp.role || "N/A"}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Field of Study: {edu.fieldOfStudy || "N/A"}
+                  Description: {exp.description || "N/A"}
                 </p>
                 <p className="text-sm text-gray-500">
                   Certificate:{" "}
-                  {edu.certificate ? (
+                  {exp.certificate ? (
                     <a
-                      href={edu.certificate}
+                      href={exp.certificate}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-500 underline"
@@ -77,13 +77,13 @@ const EducationManager = () => {
               </div>
               <div className="flex space-x-2">
                 <button
-                  onClick={() => openEditModal(edu)}
+                  onClick={() => openEditModal(exp)}
                   className="px-3 py-1 bg-yellow-500 text-white rounded cursor-pointer "
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => dispatch(deleteSingleEducation(edu.id))}
+                  onClick={() => dispatch(deleteSingleExperience(exp.id))}
                   className="px-3 py-1 bg-red-600 text-white rounded cursor-pointer "
                 >
                   Delete
@@ -96,9 +96,9 @@ const EducationManager = () => {
         !loading && <p className="text-gray-500">No education records found.</p>
       )}
 
-      <EducationForm />
+      <ExperienceForm />
     </div>
   );
 };
 
-export default EducationManager;
+export default ExperiencesManager;

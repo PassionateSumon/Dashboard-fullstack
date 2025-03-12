@@ -11,7 +11,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   accessToken: null,
-  isLoggedIn: false,
+  isLoggedIn: !!Cookies.get("accessToken"),
   loading: false,
   error: null,
 };
@@ -57,13 +57,12 @@ export const validateToken = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("/verify-token");
-      // console.log("validate token: ", res);
-      return (res.data as any);
+      return res.data as any;
     } catch (error: any) {
       return rejectWithValue({
         message:
           error.response?.data?.message ||
-          "Something went wrong while validate token",
+          "Something went wrong while validating token",
       });
     }
   }
@@ -74,11 +73,12 @@ export const refreshToken = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post("/refresh");
-      return (res.data as any)?.newAccessToken; // later
+      return (res.data as any)?.newAccessToken;
     } catch (error: any) {
       return rejectWithValue({
         message:
-          error.response?.data?.message || "Something went wrong while login",
+          error.response?.data?.message ||
+          "Something went wrong while refreshing token",
       });
     }
   }
@@ -90,10 +90,13 @@ export const logout = createAsyncThunk(
     try {
       await axiosInstance.post("/logout");
       Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      return true;
     } catch (error: any) {
       return rejectWithValue({
         message:
-          error.response?.data?.message || "Something went wrong while login",
+          error.response?.data?.message ||
+          "Something went wrong while logging out",
       });
     }
   }
@@ -108,8 +111,9 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.accessToken = null;
+      state.isLoggedIn = false;
     },
-    signin: (state, action) => {
+    signin: (state) => {
       state.isLoggedIn = true;
     },
   },
@@ -145,7 +149,11 @@ const authSlice = createSlice({
       .addCase(refreshToken.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.accessToken = action.payload;
+        if (action.payload) {
+          state.accessToken = action.payload;
+          Cookies.set("accessToken", action.payload);
+          state.isLoggedIn = true;
+        }
       })
       .addCase(refreshToken.rejected, (state, action) => {
         state.loading = false;
@@ -157,12 +165,11 @@ const authSlice = createSlice({
       .addCase(validateToken.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        // console.log(action.payload);
         const code = action.payload?.data?.status;
-        if (code < 300) {
-          state.isLoggedIn = true;
-        } else {
-          state.isLoggedIn = false;
+        const newLoginState = code < 300;
+
+        if (state.isLoggedIn !== newLoginState) {
+          state.isLoggedIn = newLoginState;
         }
       })
       .addCase(validateToken.rejected, (state, action) => {
@@ -173,6 +180,10 @@ const authSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.accessToken = null;
         state.isLoggedIn = false;
+        state.loading = false;
+        state.error = null;
+        Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
       });
   },
 });

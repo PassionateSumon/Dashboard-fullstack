@@ -70,11 +70,14 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    console.log(error.response)
+    if (error.response?.status === 500 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
+        // console.log("here")
         const res = await axios.post(
           "http://localhost:5008/api/v1/users/refresh",
+          {},
           {
             withCredentials: true,
           }
@@ -86,6 +89,7 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed!", refreshError);
+        loadingManager.stopLoading();
         return Promise.reject(refreshError);
       }
     }

@@ -24,79 +24,60 @@ const initialState: ExpState = {
   error: null,
 };
 
-const getAllExperiences = createAsyncThunk(
+export const getAllExperiences = createAsyncThunk(
   "user/get-all-exp",
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.get("get-all-experiences");
       dispatch(updateExperience(res.data as any));
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const createExperience = createAsyncThunk(
+export const createExperience = createAsyncThunk(
   "user/create-exp",
-  async (
-    { company, role, startDate, endDate, description, certificate }: any,
-    { rejectWithValue, dispatch }
-  ) => {
+  async ({formData}: any, { rejectWithValue, dispatch }) => {
+    console.log(formData)
     try {
-      const res = await axiosInstance.post("create-experience", {
-        company,
-        role,
-        startDate,
-        endDate,
-        description,
-        certificate,
-      });
+      const res = await axiosInstance.post("create-experience", formData);
       dispatch(getAllExperiences());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const updateExp = createAsyncThunk(
+export const updateExp = createAsyncThunk(
   "user/update-exp",
-  async (
-    { id, company, role, startDate, endDate, description, certificate }: any,
-    { rejectWithValue, dispatch }
-  ) => {
+  async ({ id, formData }: any, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosInstance.put(`update-experience/${id}`, {
-        company,
-        role,
-        startDate,
-        endDate,
-        description,
-        certificate,
-      });
+      const res = await axiosInstance.put(`update-experience/${id}`, formData);
       dispatch(getAllExperiences());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const deleteSingleExperience = createAsyncThunk(
+export const deleteSingleExperience = createAsyncThunk(
   "user/delete-one-exp",
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.delete(`delete-single-experience/${id}`);
       dispatch(getAllExperiences());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const deleteAllExperiences = createAsyncThunk(
+export const deleteAllExperiences = createAsyncThunk(
   "user/delete-all-exps",
   async (_, { rejectWithValue, dispatch }) => {
     try {

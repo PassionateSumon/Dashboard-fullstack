@@ -43,21 +43,28 @@ const App = () => {
               !isLoggedIn ? (
                 <LoginPage />
               ) : (
-                <Navigate to={lastRoute || "/"} replace />
+                <Navigate
+                  to={lastRoute !== "/" ? lastRoute : "/home/dashboard"}
+                  replace
+                />
               )
             }
           />
           <Route
             path="/signup"
             element={
-              !isLoggedIn ? <SignupPage /> : <Navigate to={"/"} replace />
+              !isLoggedIn ? <SignupPage /> : <Navigate to={"/signin"} replace />
             }
           />
 
           {/* authorized */}
           <Route element={<ProtectedRoute isLoggedIn={isLoggedIn} />}>
             <Route path="/home">
-              <Route path="hh" element={<Dashboard />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route
+                path="*"
+                element={<Navigate to="/home/dashboard" replace />}
+              />
             </Route>
           </Route>
         </Route>
