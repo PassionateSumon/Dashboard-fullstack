@@ -31,7 +31,6 @@ const SkillsManager = () => {
         Add New Skill
       </button>
 
-      {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">Error: {error}</p>}
 
       {Array.isArray(skills) && skills.length > 0 ? (

@@ -89,8 +89,6 @@ export const logout = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await axiosInstance.post("/logout");
-      Cookies.remove("accessToken");
-      Cookies.remove("refreshToken");
       return true;
     } catch (error: any) {
       return rejectWithValue({

@@ -66,6 +66,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => {
     loadingManager.stopLoading();
+    // console.log(response)
     return response;
   },
   async (error) => {

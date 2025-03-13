@@ -36,7 +36,10 @@ const DetailsManager = () => {
             <strong>Age:</strong> {user.age || "Not set"}
           </p>
           <p>
-            <strong>Gender:</strong> {user.gender || "Not set"}
+            <strong>Gender:</strong>{" "}
+            {user.gender
+              ? user.gender.charAt(0).toUpperCase() + user.gender.slice(1)
+              : "Not set"}
           </p>
           <p>
             <strong>Address:</strong> {user.address || "Not set"}
@@ -54,12 +57,27 @@ const DetailsManager = () => {
             <strong>Location:</strong> {user.location || "Not set"}
           </p>
           <p>
-            <strong>Portfolio:</strong> {user.portfolio || "Not set"}
+            <strong>Portfolio:</strong>{" "}
+            {user.portfolio ? (
+              <Link
+                to={`${user.portfolio}`}
+                className="text-blue-800"
+                target="_blank"
+              >
+                View
+              </Link>
+            ) : (
+              "Not set"
+            )}
           </p>
           <p>
             <strong>Avatar:</strong>{" "}
             {user.avatar ? (
-              <Link to={`${user.avatar}`} className="text-blue-800" target="_blank">
+              <Link
+                to={`${user.avatar}`}
+                className="text-blue-800"
+                target="_blank"
+              >
                 View
               </Link>
             ) : (

@@ -62,6 +62,12 @@ const ExperienceForm = () => {
     }
   };
 
+  const setLast = () => {
+    toggleModal();
+    setSelectedExp(null);
+    setIsEditing(false);
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
@@ -76,17 +82,19 @@ const ExperienceForm = () => {
     }
     if (isEditing && selectedExp) {
       dispatch(updateExp({ id: selectedExp.id, formData: formDataToSubmit }));
+      setLast();
     } else {
-      dispatch(
-        createExperience({
-          formData: formDataToSubmit,
-        })
-      );
+      if (formData.company && formData.role && formData.startDate) {
+        dispatch(
+          createExperience({
+            formData: formDataToSubmit,
+          })
+        );
+        setLast();
+      } else {
+        alert("You need to fill company, role and start date.");
+      }
     }
-
-    toggleModal();
-    setSelectedExp(null);
-    setIsEditing(false);
   };
 
   return (
@@ -94,7 +102,7 @@ const ExperienceForm = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
           <h2 className="text-xl font-bold mb-4">
-            {isEditing ? "Edit Education" : "Add Education"}
+            {isEditing ? "Edit Experience" : "Add Experience"}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Institute (Always Visible) */}

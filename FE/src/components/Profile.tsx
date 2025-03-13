@@ -17,7 +17,7 @@ const Profile: FC = () => {
     <div className="max-w-sm max-h-screen mx-auto bg-white p-6 space-y-5 rounded-lg shadow-md text-center">
       <div>
         <label className="text-xl font-bold">Name</label>
-        <h2 className="text-lg mb-2">
+        <h2 className="text-lg mb-2 break-words w-full ">
           {user?.name || "No Name"}
         </h2>
       </div>

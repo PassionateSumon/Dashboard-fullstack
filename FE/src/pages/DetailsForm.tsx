@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store/store";
 import { updateProfile } from "../redux/slices/ProfileSlice";
@@ -49,7 +49,7 @@ const DetailsForm: FC = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -129,13 +129,17 @@ const DetailsForm: FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium">Gender</label>
-                <input
-                  type="text"
+                <select
                   name="gender"
                   value={formData.gender || ""}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-md"
-                />
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">male</option>
+                  <option value="female">female</option>
+                  <option value="other">other</option>
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium">Address</label>
