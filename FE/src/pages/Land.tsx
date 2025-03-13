@@ -8,7 +8,7 @@ const Land = () => {
           Welcome to Profile Dashboard
         </h1>
         <p className="text-sm mb-6">
-          Join us today and explore amazing things.
+          Join today and maintain your profile and all details✅
         </p>
         <div className="flex flex-col gap-4">
           <Link

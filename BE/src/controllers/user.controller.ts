@@ -246,33 +246,39 @@ export const updateProfile = async (
 ): Promise<any> => {
   const id = req?.user?.userId;
   const input = req?.body;
+  // console.log(input);
 
   try {
     const user = await prisma.user.findUnique({
       where: { id },
     });
-    if (!input.password) {
-      input.password = user?.password;
-    }
-    if (!input?.email) {
-      input.email = user?.email;
-    }
 
     if (!user) {
       return res.status(400).json(new ApiErrorHandler(400, "User not found!"));
     }
 
-    const updatedUserProfile = await prisma.user.upsert({
+    input.password = input.password || user.password;
+    input.email = input.email || user.email;
+
+    if (input.birthDate) {
+      input.birthDate = input.birthDate.trim()
+        ? new Date(input.birthDate).toISOString()
+        : null;
+    }
+
+    // console.log(input);
+
+    const updatedUserProfile = await prisma.user.update({
       where: { id },
-      update: input,
-      create: input,
+      data: {
+        ...input,
+      },
       include: {
         skills: true,
         experience: true,
         education: true,
         hobbies: true,
       },
-      omit: { password: true, refreshToken: true },
     });
 
     return res

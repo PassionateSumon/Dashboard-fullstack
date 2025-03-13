@@ -5,7 +5,7 @@ import { Hobby } from "./HobbySlice";
 import { Skill } from "./SkillSlice";
 import axiosInstance from "../../utils/AxiosInstance";
 
-interface User {
+export interface User {
   email: string;
   name?: string;
   bio?: string;
@@ -35,24 +35,25 @@ const initialState: ProfileState = {
   error: null,
 };
 
-const getProfile = createAsyncThunk(
+export const getProfile = createAsyncThunk(
   "user/profile",
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("get-profile");
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
-const updateProfile = createAsyncThunk(
+export const updateProfile = createAsyncThunk(
   "user/update-profile",
-  async (input, { rejectWithValue }) => {
+  async ({formData}: any, { rejectWithValue }) => {
+    console.log(formData)
     try {
-      const res = await axiosInstance.put("update-profile", input);
-      return res.data;
+      const res = await axiosInstance.put("update-profile", formData);
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }

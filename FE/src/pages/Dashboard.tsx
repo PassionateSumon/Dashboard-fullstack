@@ -5,6 +5,7 @@ import DetailsManager from "./DetailsManager";
 import SkillsManager from "./SkillsManager";
 import ExperiencesManager from "./ExperiencesManager";
 import HobbyManager from "./HobbyManager";
+import Profile from "../components/Profile";
 
 const tabs: DashboardTab[] = [
   "details",
@@ -55,7 +56,9 @@ const Dashboard: FC = () => {
         <div className="col-span-1 border border-gray-300 p-4 rounded-md bg-gray-100">
           <h2 className="text-2xl font-semibold mb-2 text-center">Profile</h2>
           <hr className="border-gray-400" />
-          <div className="mt-4">Profile details go here...</div>
+          <div className="mt-4">
+            <Profile />
+          </div>
         </div>
 
         {/* Right Section (Tabs + Content) */}
