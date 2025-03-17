@@ -8,6 +8,18 @@ import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import cloudinary from "../config/cloudinary";
 
+interface OptionsType {
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: "strict" | "lax" | "none";
+}
+
+const options: OptionsType = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+};
+
 export const signup = async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, password } = req?.body;
@@ -74,13 +86,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       data: { refreshToken },
     });
 
-    res
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      })
-      .cookie("accessToken", accessToken);
+    res.cookie("refreshToken", refreshToken).cookie("accessToken", accessToken);
 
     res.status(200).json(new ApiResponseHandler(200, "login successful."));
   } catch (error) {
@@ -123,18 +129,21 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     });
 
     res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // for now true but later it will be changed
-      sameSite: "strict",
+      // httpOnly: true,
+      // secure: process.env.NODE_ENV === "production", // for now true but later it will be changed
+      // sameSite: "strict",
     });
     res.cookie("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: true, // for now true but later it will be changed
-      sameSite: "strict",
+      // httpOnly: true,
+      // secure: true, // for now true but later it will be changed
+      // sameSite: "strict",
     });
+    // console.log(newAccessToken);
+    // console.log(newRefreshToken);
     res.status(200).json(
       new ApiResponseHandler(200, "Token refreshed successfully.", {
         newAccessToken,
+        newRefreshToken,
       })
     );
   } catch (error) {
@@ -150,21 +159,23 @@ export const validateToken = async (
 ): Promise<any> => {
   try {
     const accessToken = req?.cookies?.accessToken;
-    // console.log("verify token: ",accessToken)
-    const isMatched = jwt.verify(
+    // console.log("1---verify token: ", accessToken);
+    jwt.verify(
       accessToken,
       process.env.JWT_ACCESS_SECRET as string
     );
-    // console.log(isMatched)
-    if (!isMatched) {
-      return res
-        .status(403)
-        .json(new ApiErrorHandler(403, "Access token not found!"));
-    }
+
     return res
       .status(200)
       .json(new ApiResponseHandler(200, "token verified!", { status: 200 }));
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === "TokenExpiredError") {
+      return res
+        .status(401)
+        .json(new ApiErrorHandler(401, "Token has expired!"));
+    } else if (error.name === "JsonWebTokenError") {
+      return res.status(401).json(new ApiErrorHandler(401, "Invalid token!"));
+    }
     return res
       .status(500)
       .json(new ApiErrorHandler(500, "Internal server error at verifyToken!"));

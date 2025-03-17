@@ -20,7 +20,7 @@ const App = () => {
     }
   }, [location.pathname, isLoggedIn]);
   const lastRoute = localStorage.getItem("lastRoute") || "/";
-  // console.log(isLoggedIn);
+  console.log(isLoggedIn);
 
   useEffect(() => {
     const unsubscribe = loadingManager.subscribe((loading) => {

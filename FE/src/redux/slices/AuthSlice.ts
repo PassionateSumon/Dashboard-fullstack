@@ -11,7 +11,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   accessToken: null,
-  isLoggedIn: !!Cookies.get("accessToken"),
+  isLoggedIn: false,
   loading: false,
   error: null,
 };
@@ -42,11 +42,12 @@ export const login = createAsyncThunk(
   ) => {
     try {
       const res = await axiosInstance.post("/login", { email, password });
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error: any) {
       return rejectWithValue({
         message:
           error.response?.data?.message || "Something went wrong while login",
+        status: error.response?.status || 500,
       });
     }
   }
@@ -55,6 +56,10 @@ export const login = createAsyncThunk(
 export const validateToken = createAsyncThunk(
   "auth/validate",
   async (_, { rejectWithValue }) => {
+    const token = Cookies.get("accessToken");
+    if(!token) {
+      return false;
+    }
     try {
       const res = await axiosInstance.get("/verify-token");
       return res.data as any;
@@ -187,4 +192,4 @@ const authSlice = createSlice({
 });
 
 export const { signin } = authSlice.actions;
-export default authSlice;
+export default authSlice.reducer;

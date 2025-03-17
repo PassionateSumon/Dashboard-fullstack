@@ -7,9 +7,9 @@ import { AppDispatch } from "../redux/store/store";
 const Validate = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  useEffect(()=> {
+  useEffect(() => {
     dispatch(validateToken());
-  }, [dispatch])
+  }, [dispatch]);
 
   return <Outlet />;
 };

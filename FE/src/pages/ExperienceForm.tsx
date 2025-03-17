@@ -105,7 +105,6 @@ const ExperienceForm = () => {
             {isEditing ? "Edit Experience" : "Add Experience"}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Institute (Always Visible) */}
             <div>
               <label className="block font-semibold">Company</label>
               <input
@@ -118,7 +117,6 @@ const ExperienceForm = () => {
               />
             </div>
 
-            {/* Start Date (Always Visible) */}
             <div>
               <label className="block font-semibold">Start Date</label>
               <input
@@ -164,7 +162,6 @@ const ExperienceForm = () => {
               />
             </div>
 
-            {/* Certificate Upload (Only for Update) */}
             <div>
               <label className="block font-semibold">Certificate</label>
               <input

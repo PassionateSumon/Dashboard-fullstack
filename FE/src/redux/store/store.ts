@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authSlice from "../slices/AuthSlice";
+import authReducer from "../slices/AuthSlice";
 import profileSlice from "../slices/ProfileSlice";
 import { loginMiddleware } from "../middleware/loginMiddleware";
 import { logoutMiddleware } from "../middleware/logoutMiddleware";
@@ -10,7 +10,7 @@ import skillSlice from "../slices/SkillSlice";
 
 export const store = configureStore({
   reducer: {
-    auth: authSlice.reducer,
+    auth: authReducer,
     profile: profileSlice.reducer,
     education: eduSlice.reducer,
     experience: expSlice.reducer,

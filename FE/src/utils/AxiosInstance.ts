@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 class LoadingManager {
   private activeRequests: number = 0;
@@ -46,7 +47,7 @@ axiosInstance.interceptors.request.use(
       config.headers = {};
     }
     if (accessToken) {
-      config.headers.Authorization = accessToken;
+      config.headers["Authorization"] = accessToken;
     }
 
     if (config.data instanceof FormData) {
@@ -71,22 +72,29 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    console.log(error.response)
-    if (error.response?.status === 500 && !originalRequest._retry) {
+    // console.log(error.response);
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        // console.log("here")
-        const res = await axios.post(
-          "http://localhost:5008/api/v1/users/refresh",
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        const newAccessToken = (res.data as any).newAccessToken;
+        const rToken = Cookies.get("refreshToken");
+        // console.log("rToken: -- ",rToken);
+        if (!rToken) {
+          console.error("Refresh token not found!");
+          loadingManager.stopLoading();
+          localStorage.removeItem("accessToken");
+          return Promise.reject(error);
+        }
+        // console.log(localStorage.getItem("accessToken"))
+        const res = await axiosInstance.post("/refresh", {
+          refreshToken: rToken,
+        });
+        // console.log(first)
+        const { newAccessToken, newRefreshToken } = (res.data as any)?.data;
+        // console.log("newA: ", newAccessToken);
+        // console.log("newR: ", newRefreshToken);
         localStorage.setItem("accessToken", newAccessToken);
+        Cookies.set("refreshToken", newRefreshToken);
 
-        originalRequest.headers.Authorization = newAccessToken;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed!", refreshError);
