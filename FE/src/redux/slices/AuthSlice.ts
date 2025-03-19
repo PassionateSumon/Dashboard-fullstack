@@ -11,7 +11,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   accessToken: null,
-  isLoggedIn: false,
+  isLoggedIn: !!Cookies.get("accessToken"),
   loading: false,
   error: null,
 };
@@ -62,6 +62,7 @@ export const validateToken = createAsyncThunk(
     }
     try {
       const res = await axiosInstance.get("/verify-token");
+      // console.log(res);
       return res.data as any;
     } catch (error: any) {
       return rejectWithValue({
@@ -94,6 +95,7 @@ export const logout = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await axiosInstance.post("/logout");
+      localStorage.clear();
       return true;
     } catch (error: any) {
       return rejectWithValue({
@@ -192,4 +194,4 @@ const authSlice = createSlice({
 });
 
 export const { signin } = authSlice.actions;
-export default authSlice.reducer;
+export default authSlice;

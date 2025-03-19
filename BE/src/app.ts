@@ -17,8 +17,6 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(morgan("dev"));
-// generateAccessToken();
-
 app.use("/api/v1/users", userRouter);
 
 

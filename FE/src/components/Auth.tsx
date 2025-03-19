@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { login, signup } from "../redux/slices/AuthSlice";
@@ -22,7 +22,7 @@ const Auth: FC<AuthProps> = ({ from }) => {
   const navigate = useNavigate();
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: ChangeEvent<HTMLInputElement>,
     key: keyof FormData
   ) => {
     setFormData({
@@ -36,8 +36,9 @@ const Auth: FC<AuthProps> = ({ from }) => {
       dispatch(signup({ email: formData.email, password: formData.password }));
       navigate("/signin");
     } else if (from === "login") {
-      console.log(from);
+      // console.log(from);
       dispatch(login({ email: formData.email, password: formData.password }));
+      navigate("/home/dashboard");
     }
     setFormData({
       email: "",

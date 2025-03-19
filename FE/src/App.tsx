@@ -19,8 +19,8 @@ const App = () => {
       localStorage.setItem("lastRoute", location.pathname);
     }
   }, [location.pathname, isLoggedIn]);
-  const lastRoute = localStorage.getItem("lastRoute") || "/";
-  console.log(isLoggedIn);
+  // const lastRoute = localStorage.getItem("lastRoute") || "/";
+  // console.log(isLoggedIn);
 
   useEffect(() => {
     const unsubscribe = loadingManager.subscribe((loading) => {
@@ -44,7 +44,8 @@ const App = () => {
                 <LoginPage />
               ) : (
                 <Navigate
-                  to={lastRoute !== "/" ? lastRoute : "/home/dashboard"}
+                  // to={lastRoute !== "/" ? lastRoute : "/home/dashboard"}
+                  to="/home/dashboard"
                   replace
                 />
               )

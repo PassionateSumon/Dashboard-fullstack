@@ -11,7 +11,7 @@ export const generateAccessToken = (userId: string) => {
   if (!ACCESS_SECRET) throw new Error("Access secret key not found!");
   try {
     const token = jwt.sign({ userId }, ACCESS_SECRET, {
-      expiresIn: ACCESS_EXPIRES,
+      expiresIn: '1m',
     });
     return token;
   } catch (error) {
