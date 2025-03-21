@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent, ChangeEvent } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store/store";
 import { useExperienceContext } from "../context/ExperienceContext";
@@ -14,7 +14,7 @@ const ExperienceForm = () => {
     setSelectedExp,
     setIsEditing,
   } = useExperienceContext();
-
+  const expRef = useRef(null);
   const [formData, setFormData] = useState({
     company: "",
     role: "",
@@ -49,6 +49,21 @@ const ExperienceForm = () => {
       });
     }
   }, [isEditing, selectedExp]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (expRef.current && !(expRef.current as any).contains(e.target)) {
+        toggleModal();
+      }
+    };
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isModalOpen, toggleModal]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -99,8 +114,8 @@ const ExperienceForm = () => {
 
   return (
     isModalOpen && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center">
+        <div ref={expRef} className="bg-white p-6 rounded-lg shadow-lg w-96">
           <h2 className="text-xl font-bold mb-4">
             {isEditing ? "Edit Experience" : "Add Experience"}
           </h2>

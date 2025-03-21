@@ -44,11 +44,10 @@ export const createSkill = createAsyncThunk(
   "user/create-skill",
   async ({ formData }: any, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosInstance.post("create-skill", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axiosInstance.post(
+        "create-skill/certificate",
+        formData
+      );
       dispatch(getAllSkills());
       return (res.data as any)?.data;
     } catch (error) {
@@ -61,11 +60,10 @@ export const updateOneSkill = createAsyncThunk(
   "user/update-skill",
   async ({ id, formData }: any, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosInstance.put(`update-skill/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axiosInstance.put(
+        `update-skill/${id}/certificate`,
+        formData
+      );
       dispatch(getAllSkills());
       return (res.data as any)?.data;
     } catch (error) {

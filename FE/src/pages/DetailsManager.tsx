@@ -75,6 +75,7 @@ const DetailsManager = () => {
             {user.avatar ? (
               <Link
                 to={`${user.avatar}`}
+                rel="noopener noreferrer"
                 className="text-blue-800"
                 target="_blank"
               >

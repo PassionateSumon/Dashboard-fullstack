@@ -160,10 +160,7 @@ export const validateToken = async (
   try {
     const accessToken = req?.cookies?.accessToken;
     // console.log("1---verify token: ", accessToken);
-    jwt.verify(
-      accessToken,
-      process.env.JWT_ACCESS_SECRET as string
-    );
+    jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET as string);
 
     return res
       .status(200)
@@ -257,6 +254,9 @@ export const updateProfile = async (
 ): Promise<any> => {
   const id = req?.user?.userId;
   const input = req?.body;
+  if (input.age) {
+    input.age = Number(input.age);
+  }
   // console.log(input);
 
   try {

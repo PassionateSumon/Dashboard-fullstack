@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent, ChangeEvent } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store/store";
 import { useHobbyContext } from "../context/HobbyContext";
@@ -14,7 +14,7 @@ const HobbyForm = () => {
     setSelectedHobby,
     setIsEditing,
   } = useHobbyContext();
-
+  const hobbyRef = useRef(null);
   const [formData, setFormData] = useState({
     name: "",
   });
@@ -30,6 +30,21 @@ const HobbyForm = () => {
       });
     }
   }, [isEditing, selectedHobby]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (hobbyRef.current && !(hobbyRef.current as any).contains(e.target)) {
+        toggleModal();
+      }
+    };
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isModalOpen, toggleModal]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -56,8 +71,8 @@ const HobbyForm = () => {
 
   return (
     isModalOpen && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center">
+        <div ref={hobbyRef} className="bg-white p-6 rounded-lg shadow-lg w-96">
           <h2 className="text-xl font-bold mb-4">
             {isEditing ? "Edit Hobby" : "Add Hobby"}
           </h2>

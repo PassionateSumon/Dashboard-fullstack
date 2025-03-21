@@ -65,17 +65,12 @@ export const createEducation = createAsyncThunk(
 
 export const updateEdu = createAsyncThunk(
   "user/update-edu",
-  async (
-    {
-      id,
-      formData
-    }: any,
-    { rejectWithValue, dispatch }
-  ) => {
+  async ({ id, formData }: any, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosInstance.put(`update-education/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axiosInstance.put(
+        `update-education/${id}/certificate`,
+        formData
+      );
       dispatch(getAllEducations());
       console.log(res.data);
       return (res.data as any)?.data;

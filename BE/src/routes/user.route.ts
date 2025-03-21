@@ -45,10 +45,16 @@ userRouter.post("/logout", authMiddleware, logout);
 userRouter.post("/refresh", refresh);
 //******************************************************************************** */
 userRouter.get("/get-profile", authMiddleware, getProfile);
-userRouter.put("/update-profile", authMiddleware, updateProfile);
+userRouter.put(
+  "/update-profile/avatar",
+  authMiddleware,
+  upload.single("avatar"),
+  uploadCloudinary,
+  updateProfile
+);
 //******************************************************************************** */
 userRouter.post(
-  "/create-skill",
+  "/create-skill/certificate",
   upload.single("certificate"),
   uploadCloudinary,
   authMiddleware,
@@ -57,7 +63,7 @@ userRouter.post(
 userRouter.get("/get-all-skills", authMiddleware, getAllSkills);
 userRouter.get("/get-single-skill/:sId", authMiddleware, getSingleSkill);
 userRouter.put(
-  "/update-skill/:sId",
+  "/update-skill/:sId/certificate",
   authMiddleware,
   upload.single("certificate"),
   uploadCloudinary,
@@ -71,7 +77,7 @@ userRouter.delete(
 userRouter.delete("/delete-all-skills", authMiddleware, deleteAllSkills);
 //******************************************************************************** */
 userRouter.post(
-  "/create-education",
+  "/create-education/certificate",
   upload.single("certificate"),
   uploadCloudinary,
   authMiddleware,
@@ -84,14 +90,22 @@ userRouter.get(
   getSingleEducation
 );
 userRouter.put(
-  "/update-education/:eId",
+  "/update-education/:eId/certificate",
   authMiddleware,
   upload.single("certificate"),
   uploadCloudinary,
   updateEducation
 );
-userRouter.delete("/delete-single-education/:eId", authMiddleware, deleteSingleEducation);
-userRouter.delete("/delete-all-educations", authMiddleware, deleteAllEducations);
+userRouter.delete(
+  "/delete-single-education/:eId",
+  authMiddleware,
+  deleteSingleEducation
+);
+userRouter.delete(
+  "/delete-all-educations",
+  authMiddleware,
+  deleteAllEducations
+);
 //******************************************************************************** */
 userRouter.post("/create-hobby", authMiddleware, createHobby);
 userRouter.get("/get-all-hobbies", authMiddleware, getAllHobbies);
@@ -105,7 +119,7 @@ userRouter.delete(
 userRouter.delete("/delete-all-hobbies", authMiddleware, deleteAllHobbies);
 //******************************************************************************** */
 userRouter.post(
-  "/create-experience",
+  "/create-experience/certificate",
   upload.single("certificate"),
   uploadCloudinary,
   authMiddleware,
@@ -118,7 +132,7 @@ userRouter.get(
   getSingleExperience
 );
 userRouter.put(
-  "/update-experience/:exId",
+  "/update-experience/:exId/certificate",
   authMiddleware,
   upload.single("certificate"),
   uploadCloudinary,

@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent, ChangeEvent } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { createEducation, updateEdu } from "../redux/slices/EduSlice";
 import { useEduContext } from "../context/EduContext";
@@ -14,7 +14,7 @@ const EducationForm = () => {
     setSelectedEdu,
     setIsEditing,
   } = useEduContext();
-
+  const eduref = useRef(null);
   const [formData, setFormData] = useState({
     institute: "",
     degree: "",
@@ -49,6 +49,21 @@ const EducationForm = () => {
       });
     }
   }, [isEditing, selectedEdu]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (eduref.current && !(eduref.current as any).contains(e.target)) {
+        toggleModal();
+      }
+    };
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isModalOpen, toggleModal]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -94,8 +109,8 @@ const EducationForm = () => {
 
   return (
     isModalOpen && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center">
+        <div ref={eduref} className="bg-white p-6 rounded-lg shadow-lg w-96">
           <h2 className="text-xl font-bold mb-4">
             {isEditing ? "Edit Education" : "Add Education"}
           </h2>

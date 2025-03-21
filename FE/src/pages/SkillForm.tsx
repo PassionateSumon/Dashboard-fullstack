@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent, ChangeEvent } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store/store";
 import { useSkillContext } from "../context/SkillContext";
@@ -14,7 +14,7 @@ const SkillForm = () => {
     setSelectedSkill,
     setIsEditing,
   } = useSkillContext();
-
+  const skillRef = useRef(null);
   const [formData, setFormData] = useState({
     name: "",
     level: "",
@@ -36,6 +36,21 @@ const SkillForm = () => {
       });
     }
   }, [isEditing, selectedSkill]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (skillRef.current && !(skillRef.current as any).contains(e.target)) {
+        toggleModal();
+      }
+    };
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isModalOpen, toggleModal]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -77,10 +92,10 @@ const SkillForm = () => {
 
   return (
     isModalOpen && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center">
+        <div ref={skillRef} className="bg-white p-6 rounded-lg shadow-lg w-96">
           <h2 className="text-xl font-bold mb-4">
-            {isEditing ? "Edit Education" : "Add Education"}
+            {isEditing ? "Edit Skill" : "Add Skill"}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -114,7 +129,7 @@ const SkillForm = () => {
                 type="file"
                 accept="application/pdf,image/*"
                 onChange={handleFileChange}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded cursor-pointer"
               />
             </div>
 
