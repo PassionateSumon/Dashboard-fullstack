@@ -10,7 +10,7 @@ const REFRESH_EXPIRES = process.env.JWT_REFRESH_EXPIRES || "30d";
 export const generateAccessToken = (userId: string) => {
   if (!ACCESS_SECRET) throw new Error("Access secret key not found!");
   try {
-    const token = jwt.sign({ userId }, ACCESS_SECRET, {
+    const token = (jwt as any).sign({ userId }, ACCESS_SECRET, {
       expiresIn: ACCESS_EXPIRES,
     });
     return token;
@@ -23,7 +23,7 @@ export const generateAccessToken = (userId: string) => {
 export const generateRefreshToken = (userId: string) => {
   if (!REFRESH_SECRET) throw new Error("Access secret key not found!");
   try {
-    return jwt.sign({ userId }, REFRESH_SECRET, {
+    return (jwt as any).sign({ userId }, REFRESH_SECRET, {
       expiresIn: REFRESH_EXPIRES,
     });
   } catch (error) {
