@@ -9,6 +9,24 @@ import {
   getAllSkillsController,
   updateSkillController,
 } from "../controllers/skill.controller";
+import {
+  createEducationController,
+  deleteEducationController,
+  getAllEducationController,
+  updateEducationController,
+} from "../controllers/education.controller";
+import {
+  createExperienceController,
+  deleteExperienceController,
+  getAllExperiencesController,
+  updateExperienceController,
+} from "../controllers/experience.controller";
+import {
+  createHobbyController,
+  deleteHobbyController,
+  getAllHobbiesController,
+  updateHobbyController,
+} from "../controllers/hobby.controller";
 
 const userRoutes: ServerRoute[] = [
   {
@@ -87,6 +105,156 @@ const userRoutes: ServerRoute[] = [
       auth: "jwt_access",
       tags: ["api", "user", "skill"],
       description: "Delete a skill.",
+    },
+  },
+  {
+    method: "GET",
+    path: "/get-all-educations",
+    handler: getAllEducationController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "education"],
+      description: "Get all educations.",
+    },
+  },
+  {
+    method: "POST",
+    path: "/create-education",
+    handler: createEducationController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "education"],
+      description: "Create a education.",
+      payload: {
+        parse: true,
+        output: "data",
+      },
+    },
+  },
+  {
+    method: "PUT",
+    path: "/update-education/{id}",
+    handler: updateEducationController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "education"],
+      description: "Update a education.",
+      payload: {
+        output: "stream",
+        parse: true,
+        allow: "multipart/form-data",
+        multipart: true,
+      },
+    },
+  },
+  {
+    method: "DELETE",
+    path: "/delete-single-education/{id}",
+    handler: deleteEducationController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "education"],
+      description: "Delete a education.",
+    },
+  },
+  {
+    method: "GET",
+    path: "/get-all-experiences",
+    handler: getAllExperiencesController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "experience"],
+      description: "Get all experiences.",
+    },
+  },
+  {
+    method: "POST",
+    path: "/create-experience",
+    handler: createExperienceController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "experience"],
+      description: "Create a experience.",
+      payload: {
+        parse: true,
+        output: "stream",
+        multipart: true,
+        allow: "multipart/form-data",
+      },
+    },
+  },
+  {
+    method: "PUT",
+    path: "/update-experience/{id}",
+    handler: updateExperienceController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "experience"],
+      description: "Update a experience.",
+      payload: {
+        output: "stream",
+        parse: true,
+        allow: "multipart/form-data",
+        multipart: true,
+      },
+    },
+  },
+  {
+    method: "DELETE",
+    path: "/delete-single-experience/{id}",
+    handler: deleteExperienceController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "experience"],
+      description: "Delete a experience.",
+    },
+  },
+  {
+    method: "GET",
+    path: "/get-all-hobbies",
+    handler: getAllHobbiesController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "hobby"],
+      description: "Get all hobbies.",
+    },
+  },
+  {
+    method: "POST",
+    path: "/create-hobby",
+    handler: createHobbyController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "hobby"],
+      description: "Create a hobby.",
+      payload: {
+        parse: true,
+        output: "data",
+      },
+    },
+  },
+  {
+    method: "PUT",
+    path: "/update-hobby/{id}",
+    handler: updateHobbyController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "hobby"],
+      description: "Update a hobby.",
+      payload: {
+        output: "data",
+        parse: true,
+      },
+    },
+  },
+  {
+    method: "DELETE",
+    path: "/delete-single-hobby/{id}",
+    handler: deleteHobbyController,
+    options: {
+      auth: "jwt_access",
+      tags: ["api", "user", "hobby"],
+      description: "Delete a hobby.",
     },
   },
 ];

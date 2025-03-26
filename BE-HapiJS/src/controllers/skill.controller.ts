@@ -31,6 +31,7 @@ export const createSkillController = async (
   try {
     const id = req.auth.credentials.userId as string;
     const payload: any = req.payload;
+    // console.log("Skill -- ", payload)
 
     if (!payload.name) {
       return error(null, `Skill name is required!`, 400)(h);
