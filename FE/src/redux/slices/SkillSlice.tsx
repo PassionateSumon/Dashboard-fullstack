@@ -45,7 +45,7 @@ export const createSkill = createAsyncThunk(
   async ({ formData }: any, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.post(
-        "create-skill/certificate",
+        "create-skill",
         formData
       );
       dispatch(getAllSkills());
@@ -61,7 +61,7 @@ export const updateOneSkill = createAsyncThunk(
   async ({ id, formData }: any, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.put(
-        `update-skill/${id}/certificate`,
+        `update-skill/${id}`,
         formData
       );
       dispatch(getAllSkills());

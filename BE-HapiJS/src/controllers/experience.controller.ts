@@ -35,7 +35,7 @@ export const createExperienceController = async (
   try {
     const id = req.auth.credentials.userId as string;
     const payload: any = req.payload;
-    // console.log("Skill -- ", payload)
+    // console.log("Exp -- ", payload);
 
     if (!payload.company) {
       return error(null, `Company name is required!`, 400)(h);
@@ -45,6 +45,13 @@ export const createExperienceController = async (
     }
     if (!payload.startDate) {
       return error(null, `Start date name is required!`, 400)(h);
+    } else {
+      payload.startDate = new Date(payload.startDate).toISOString();
+    }
+    if (payload.endDate) {
+      payload.endDate = new Date(payload.endDate).toISOString();
+    } else {
+      payload.endDate = null;
     }
 
     let certificateUrl: string | undefined;
@@ -55,7 +62,9 @@ export const createExperienceController = async (
     const input = { ...payload };
     delete input.certificate;
 
-    const skill = await prisma.skill.create({
+    // console.log(input);
+
+    const experience = await prisma.experience.create({
       data: {
         ...input,
         userId: id,
@@ -63,7 +72,7 @@ export const createExperienceController = async (
       },
     });
 
-    return success(skill, "Experience created successfully.", 201)(h);
+    return success(experience, "Experience created successfully.", 201)(h);
   } catch (err: any) {
     return error(
       null,
@@ -105,7 +114,9 @@ export const updateExperienceController = async (
       payload.startDate = new Date(payload.startDate).toISOString();
     }
     if (payload.endDate) {
-      payload.startDate = new Date(payload.endDate).toISOString();
+      payload.endDate = new Date(payload.endDate).toISOString();
+    } else {
+      payload.endDate = currExp.endDate;
     }
 
     let certificateUrl: string | null;
@@ -118,7 +129,9 @@ export const updateExperienceController = async (
     const input = { ...payload };
     delete input.certificate;
 
-    const updatedSkill = await prisma.skill.update({
+    console.log(input)
+
+    const updatedExp = await prisma.experience.update({
       where: { id: sId },
       data: {
         ...input,
@@ -126,7 +139,7 @@ export const updateExperienceController = async (
       },
     });
 
-    return success(updatedSkill, "Skill updated successfully.", 200)(h);
+    return success(updatedExp, "Skill updated successfully.", 200)(h);
   } catch (err: any) {
     return error(
       null,
@@ -163,7 +176,7 @@ export const deleteExperienceController = async (
       }
     }
 
-    const deletedExperience = await prisma.skill.delete({
+    const deletedExperience = await prisma.experience.delete({
       where: { id: exId },
     });
 

@@ -35,7 +35,7 @@ class LoadingManager {
 export const loadingManager = new LoadingManager();
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5008/api/v1/users",
+  baseURL: "http://localhost:7003/",
   withCredentials: true,
 });
 

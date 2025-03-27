@@ -13,14 +13,14 @@ import Loader from "./components/Loader";
 const App = () => {
   const { isLoggedIn }: any = useSelector((state: RootState) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
-  const location = useLocation();
-  useEffect(() => {
-    if (isLoggedIn) {
-      localStorage.setItem("lastRoute", location.pathname);
-    }
-  }, [location.pathname, isLoggedIn]);
+  // const location = useLocation();
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     localStorage.setItem("lastRoute", location.pathname);
+  //   }
+  // }, [location.pathname, isLoggedIn]);
   // const lastRoute = localStorage.getItem("lastRoute") || "/";
-  // console.log(isLoggedIn);
+  // console.log("app -- 24 --", isLoggedIn);
 
   useEffect(() => {
     const unsubscribe = loadingManager.subscribe((loading) => {

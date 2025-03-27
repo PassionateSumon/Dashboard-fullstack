@@ -57,7 +57,10 @@ export const validateToken = createAsyncThunk(
   "auth/validate",
   async (_, { rejectWithValue }) => {
     const token = Cookies.get("accessToken");
-    if(!token) {
+    // console.log("Validate token -- 60 -- ", token)
+    // console.log("Validate token -- 61 -- ", !!Cookies.get("accessToken"))
+    if (!token) {
+      console.log("here -- 63");
       return false;
     }
     try {
@@ -119,7 +122,9 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
     },
     signin: (state) => {
+      // console.log("125 -- signin reducer --");
       state.isLoggedIn = true;
+      // console.log("127 -- signin reducer -- isLoggedIn -- ", state.isLoggedIn);
     },
   },
   extraReducers: (builder) => {
@@ -170,8 +175,12 @@ const authSlice = createSlice({
       .addCase(validateToken.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        const code = action.payload?.data?.status;
+        // console.log(action.payload)
+        // const code = action.payload?.data?.statusCode;
+        const code = action.payload?.statusCode;
         const newLoginState = code < 300;
+        // console.log(newLoginState)
+        // console.log(code)
 
         if (state.isLoggedIn !== newLoginState) {
           state.isLoggedIn = newLoginState;
@@ -179,6 +188,7 @@ const authSlice = createSlice({
       })
       .addCase(validateToken.rejected, (state, action) => {
         state.loading = false;
+        // console.log("validate token rejected")
         state.isLoggedIn = false;
         state.error = action.payload as string;
       })

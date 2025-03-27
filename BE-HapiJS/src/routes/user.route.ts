@@ -36,7 +36,7 @@ const userRoutes: ServerRoute[] = [
     options: {
       auth: "jwt_access",
       tags: ["api", "user"],
-      description: "Get user profile.",
+      description: "Get user profile."
     },
   },
   {

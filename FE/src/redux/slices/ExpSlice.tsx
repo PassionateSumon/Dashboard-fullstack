@@ -42,7 +42,7 @@ export const createExperience = createAsyncThunk(
   async ({formData}: any, { rejectWithValue, dispatch }) => {
     // console.log(formData)
     try {
-      const res = await axiosInstance.post("create-experience/certificate", formData);
+      const res = await axiosInstance.post("create-experience", formData);
       dispatch(getAllExperiences());
       return (res.data as any)?.data;
     } catch (error) {
@@ -55,7 +55,7 @@ export const updateExp = createAsyncThunk(
   "user/update-exp",
   async ({ id, formData }: any, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosInstance.put(`update-experience/${id}/certificate`, formData);
+      const res = await axiosInstance.put(`update-experience/${id}`, formData);
       dispatch(getAllExperiences());
       return (res.data as any)?.data;
     } catch (error) {

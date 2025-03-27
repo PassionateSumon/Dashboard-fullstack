@@ -90,6 +90,11 @@ export const updateEducationController = async (
     } else {
       payload.startDate = new Date(payload.startDate).toISOString();
     }
+    if (payload.endTime) {
+      payload.endTime = new Date(payload.endTime).toISOString();
+    } else {
+      payload.endTime = currEducation.endTime;
+    }
 
     let certificateUrl: string | null;
     if (payload.certificate) {

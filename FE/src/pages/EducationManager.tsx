@@ -23,6 +23,8 @@ const EducationManager = () => {
     dispatch(getAllEducations());
   }, [dispatch]);
 
+  console.log(educations[0])
+
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Education Manager</h2>
@@ -45,6 +47,7 @@ const EducationManager = () => {
               className="p-4 border rounded-lg flex justify-between items-center"
             >
               <div>
+                {/* console.log(edu) */}
                 <h3 className="font-semibold">{edu.institute || "N/A"}</h3>
                 <p className="text-sm text-gray-600">
                   {new Date(edu.startDate).toISOString().split("T")[0] || "N/A"}{" "}

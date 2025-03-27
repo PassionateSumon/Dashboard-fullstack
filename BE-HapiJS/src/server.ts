@@ -84,13 +84,22 @@ const validateRefresh = async (req: Hapi.Request) => {
   }
 };
 
+const ORIGIN = process.env.DEV_ORIGIN || "http://localhost:5173";
+
 const init = async () => {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
     host: "localhost",
     routes: {
       cors: {
-        origin: [`${process.env.DEV_ORIGIN}`],
+        origin: [ORIGIN],
+        credentials: true,
+        additionalHeaders: [
+          "Accept",
+          "Authorization",
+          "Content-Type",
+          "If-None-Match",
+        ],
       },
       state: {
         parse: true,
@@ -108,13 +117,12 @@ const init = async () => {
   await server.register(Jwt);
   await server.register(Cookie);
 
-  // Access token strategy using @hapi/cookie (short TTL)
   server.auth.strategy("jwt_access", "cookie", {
     cookie: {
       name: "accessToken",
       password:
         process.env.COOKIE_SECRET || "secret_must_be_at_least_32_chars_long",
-      isHttpOnly: true,
+      isHttpOnly: false,
       ttl: 15 * 60 * 1000,
       path: "/",
     },

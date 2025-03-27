@@ -8,6 +8,7 @@ const Validate = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    // console.log("here -- 11")
     dispatch(validateToken());
   }, [dispatch]);
 

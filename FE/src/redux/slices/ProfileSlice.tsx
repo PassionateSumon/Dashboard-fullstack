@@ -52,7 +52,8 @@ export const updateProfile = createAsyncThunk(
   async ({ formData }: any, { rejectWithValue }) => {
     // console.log(formData)
     try {
-      const res = await axiosInstance.put("update-profile/avatar", formData);
+      // const res = await axiosInstance.put("update-profile/avatar", formData);
+      const res = await axiosInstance.put("update-profile", formData);
       return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);

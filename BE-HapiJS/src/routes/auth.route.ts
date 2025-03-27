@@ -36,6 +36,10 @@ const authRoutes: ServerRoute[] = [
       tags: ["api", "auth"],
       description: "Signup a new user.",
       auth: false,
+      payload: {
+        parse: true,
+        output: "data",
+      },
     },
   },
   {
@@ -65,6 +69,10 @@ const authRoutes: ServerRoute[] = [
       tags: ["api", "auth"],
       description: "Login a user.",
       auth: false,
+      payload: {
+        parse: true,
+        output: "data",
+      },
     },
   },
   {

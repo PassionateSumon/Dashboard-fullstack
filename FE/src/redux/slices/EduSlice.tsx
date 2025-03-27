@@ -56,7 +56,7 @@ export const createEducation = createAsyncThunk(
         startDate,
       });
       dispatch(getAllEducations());
-      return res.data;
+      return (res.data as any)?.data;
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -67,10 +67,7 @@ export const updateEdu = createAsyncThunk(
   "user/update-edu",
   async ({ id, formData }: any, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosInstance.put(
-        `update-education/${id}/certificate`,
-        formData
-      );
+      const res = await axiosInstance.put(`update-education/${id}`, formData);
       dispatch(getAllEducations());
       console.log(res.data);
       return (res.data as any)?.data;

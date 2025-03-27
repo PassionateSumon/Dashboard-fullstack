@@ -102,6 +102,14 @@ const EducationForm = () => {
       );
     }
 
+    setFormData({
+      institute: "",
+      degree: "",
+      fieldOfStudy: "",
+      startDate: "",
+      endTime: "",
+      certificate: null,
+    });
     toggleModal();
     setSelectedEdu(null);
     setIsEditing(false);

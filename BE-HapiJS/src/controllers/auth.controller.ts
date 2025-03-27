@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 export const signupController = async (req: Request, h: ResponseToolkit) => {
   try {
     const payload = req.payload as any;
+    console.log("", payload);
     const existedUser = await prisma.user.findUnique({
       where: { email: payload.email },
     });
@@ -72,15 +73,15 @@ export const loginController = async (req: Request, h: ResponseToolkit) => {
     h.state("accessToken", accessToken, {
       ttl: 1 * 24 * 60 * 60 * 1000, // 1 day
       path: "/",
-      isSecure: process.env.NODE_ENV === "production",
-      isHttpOnly: true,
+      // isSecure: process.env.NODE_ENV === "production",
+      isHttpOnly: false,
     });
 
     h.state("refreshToken", refreshToken, {
       ttl: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: "/",
-      isSecure: process.env.NODE_ENV === "production",
-      isHttpOnly: true,
+      // isSecure: process.env.NODE_ENV === "production",
+      isHttpOnly: false,
     });
 
     return success(null, "Login successfull.", 200)(h);
@@ -183,9 +184,11 @@ export const refreshController = async (req: Request, h: ResponseToolkit) => {
     });
 
     h.state("accessToken", newAccessToken, {
+      isHttpOnly: false,
       ttl: 1 * 24 * 60 * 60 * 1000,
     });
     h.state("refreshToken", newRefreshToken, {
+      isHttpOnly: false,
       ttl: 7 * 24 * 60 * 60 * 1000,
     });
 
