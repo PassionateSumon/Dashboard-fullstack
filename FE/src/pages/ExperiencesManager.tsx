@@ -34,7 +34,6 @@ const ExperiencesManager = () => {
         Add New Experience
       </button>
 
-      {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">Error: {error}</p>}
 
       {Array.isArray(experiences) && experiences.length > 0 ? (

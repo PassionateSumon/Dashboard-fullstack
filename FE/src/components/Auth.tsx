@@ -47,7 +47,7 @@ const Auth: FC<AuthProps> = ({ from }) => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-amber-100 to-orange-200">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-gray-400 to-gray-700">
       <div className="bg-white shadow-lg rounded-2xl p-8 w-96 space-y-6">
         <h2 className="text-2xl font-bold text-gray-800 text-center">
           {from === "signup" ? "Sign Up" : "Login"}
@@ -58,7 +58,7 @@ const Auth: FC<AuthProps> = ({ from }) => {
           <input
             type="email"
             value={formData.email}
-            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 transition"
+            className="border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-gray-500 transition"
             onChange={(e) => handleChange(e, "email")}
           />
         </div>
@@ -68,14 +68,14 @@ const Auth: FC<AuthProps> = ({ from }) => {
           <input
             type="password"
             value={formData.password}
-            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 transition"
+            className="border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-gray-500 transition"
             onChange={(e) => handleChange(e, "password")}
           />
         </div>
 
         <button
           onClick={handleSubmit}
-          className="w-full cursor-pointer bg-amber-600 hover:bg-amber-700 transition text-white font-semibold py-3 rounded-lg shadow-md"
+          className="w-full cursor-pointer bg-gray-600 hover:bg-gray-700 transition text-white font-semibold py-3 rounded-lg shadow-md"
         >
           Submit
         </button>

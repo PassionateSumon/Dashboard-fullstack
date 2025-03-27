@@ -23,7 +23,7 @@ const EducationManager = () => {
     dispatch(getAllEducations());
   }, [dispatch]);
 
-  console.log(educations[0])
+  // console.log(educations[0])
 
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white shadow-lg rounded-lg">
@@ -36,7 +36,6 @@ const EducationManager = () => {
         Add New Education
       </button>
 
-      {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">Error: {error}</p>}
 
       {Array.isArray(educations) && educations.length > 0 ? (

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Land = () => {
   return (
-    <div className="h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 to-purple-600">
+    <div className="h-screen flex justify-center items-center bg-gradient-to-r from-gray-400 to-gray-700">
       <div className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-lg text-center text-white w-80">
         <h1 className="text-3xl font-bold mb-4">
           Welcome to Profile Dashboard
