@@ -1,4 +1,4 @@
-import { ResponseToolkit } from "@hapi/hapi";
+import type { ResponseToolkit } from "@hapi/hapi";
 import { statusCodes } from "../config/constant";
 
 export const success = (

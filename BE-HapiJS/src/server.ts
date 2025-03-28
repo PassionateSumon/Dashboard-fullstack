@@ -2,11 +2,11 @@ import Hapi from "@hapi/hapi";
 import dotenv from "dotenv";
 import Jwt from "@hapi/jwt";
 import Cookie from "@hapi/cookie";
+import jwt from "jsonwebtoken";
 import { registerSwagger } from "./plugins/swagger.plugin";
 import { ApiError } from "./utils/ApiError.util";
 import { prisma } from "./db/db";
 import authRoutes from "./routes/auth.route";
-import jwt from "jsonwebtoken";
 import userRoutes from "./routes/user.route";
 dotenv.config();
 
@@ -89,7 +89,8 @@ const ORIGIN = process.env.DEV_ORIGIN || "http://localhost:5173";
 const init = async () => {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
-    host: "localhost",
+    // host: "localhost",
+    host: "0.0.0.0",
     routes: {
       cors: {
         origin: [ORIGIN],

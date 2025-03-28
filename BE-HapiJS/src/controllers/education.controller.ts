@@ -1,4 +1,4 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
+import type { Request, ResponseToolkit } from "@hapi/hapi";
 import { error, success } from "../utils/returnFunction.util";
 import { prisma } from "../db/db";
 import { getCloudinaryPublicId, uploadToClodinary } from "../config/clodinary";

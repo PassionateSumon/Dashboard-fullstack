@@ -23,7 +23,7 @@ export const signup = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axiosInstance.post("/signup", { email, password });
+      await axiosInstance.post("/signup", { email, password });
       return "Signed up successfully. Please login...";
     } catch (error: any) {
       return rejectWithValue({

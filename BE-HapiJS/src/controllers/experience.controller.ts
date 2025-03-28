@@ -1,4 +1,4 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
+import type { Request, ResponseToolkit } from "@hapi/hapi";
 import { error, success } from "../utils/returnFunction.util";
 import { prisma } from "../db/db";
 import { getCloudinaryPublicId, uploadToClodinary } from "../config/clodinary";
@@ -129,7 +129,7 @@ export const updateExperienceController = async (
     const input = { ...payload };
     delete input.certificate;
 
-    console.log(input)
+    // console.log(input)
 
     const updatedExp = await prisma.experience.update({
       where: { id: sId },

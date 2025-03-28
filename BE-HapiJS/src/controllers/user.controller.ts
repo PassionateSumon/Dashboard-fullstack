@@ -1,4 +1,4 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
+import type { Request, ResponseToolkit } from "@hapi/hapi";
 import { error, success } from "../utils/returnFunction.util";
 import { prisma } from "../db/db";
 import { uploadToClodinary } from "../config/clodinary";
@@ -90,7 +90,7 @@ export const updateProfileController = async (
         experience: true,
         hobbies: true,
       },
-      omit: {password: true, refreshToken: true}
+      omit: { password: true, refreshToken: true },
     });
 
     return success(updatedUser, "User profile updated successfully.", 200)(h);
@@ -102,4 +102,3 @@ export const updateProfileController = async (
     )(h);
   }
 };
-

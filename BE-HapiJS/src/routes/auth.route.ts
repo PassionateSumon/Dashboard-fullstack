@@ -1,4 +1,4 @@
-import { ServerRoute } from "@hapi/hapi";
+import type { ServerRoute } from "@hapi/hapi";
 import {
   loginController,
   logoutController,

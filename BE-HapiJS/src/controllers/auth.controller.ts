@@ -1,4 +1,4 @@
-import { Request, ResponseToolkit } from "@hapi/hapi";
+import type { Request, ResponseToolkit } from "@hapi/hapi";
 import { prisma } from "../db/db";
 import { error, success } from "../utils/returnFunction.util";
 import { CryptoUtil } from "../utils/Crypto.util";
@@ -8,10 +8,16 @@ import jwt from "jsonwebtoken";
 export const signupController = async (req: Request, h: ResponseToolkit) => {
   try {
     const payload = req.payload as any;
-    console.log("", payload);
+    // console.log("", payload);
+
+    // console.log("Testing database connection...");
+    // const testQuery = await prisma.$queryRaw`SELECT 1`;
+    // console.log("Database connection test successful:", testQuery);
+
     const existedUser = await prisma.user.findUnique({
       where: { email: payload.email },
     });
+    // console.log(existedUser)
 
     if (existedUser) {
       return error(null, "User already exists!", 400)(h);
@@ -29,6 +35,8 @@ export const signupController = async (req: Request, h: ResponseToolkit) => {
 
     return success(user, "User created successfully!", 200)(h);
   } catch (err: any) {
+    // console.error("Signup Error:", err);
+    // console.error("Error stack:", err.stack);
     return error(
       null,
       `${err?.message}` || "Internal server error!",
