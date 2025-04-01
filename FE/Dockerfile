@@ -12,4 +12,6 @@ RUN ls -la /app/dist
 
 EXPOSE 5173
 
-CMD ["npm", "run", "preview"]
+RUN apk add --no-cache netcat-openbsd
+# CMD ["npm", "run", "preview"]
+CMD ["sh", "-c", "until nc -z backend 7003; do sleep 1; done && npm run preview"]

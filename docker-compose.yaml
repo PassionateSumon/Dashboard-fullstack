@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./BE-HapiJS
+    ports:
+      - "7003:7003"
+    env_file:
+      - ./BE-HapiJS/.env
+    depends_on:
+      database:
+        condition: service_healthy
+
+  frontend:
+    build: ./FE
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_started
+
+  database:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=youruser
+      - POSTGRES_PASSWORD=yourpassword
+      - POSTGRES_DB=yourdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
